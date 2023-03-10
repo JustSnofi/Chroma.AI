@@ -11,5 +11,7 @@ img = cv2.imread(img_path, 1)
 display(data_set)
 
 cv2.imshow('image', img)
+print(img[300,300])
+
 cv2.waitKey(0)
 cv2.destroyAllWindows()
