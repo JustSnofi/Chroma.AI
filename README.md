@@ -12,7 +12,7 @@
 
 ## Libraries, datasets and versions:
 ### Python 3.9 *| Specifically: 3.9.13*
-[Requirements.txt](requirements.txt) with: 
+[Requirements.txt](requirements.txt) with - [bat](install_libs.bat) or with:
 ```
 pip install -r requirements.txt
 ```
