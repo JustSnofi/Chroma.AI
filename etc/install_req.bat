@@ -1,1 +1,1 @@
-pip install -r etc\requirements.txt
+pip install -r requirements.txt
