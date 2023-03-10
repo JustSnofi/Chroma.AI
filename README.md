@@ -1,4 +1,4 @@
-# Chroma.AI
+# <span style="color:#FF0000">C</span><span style="color:#66CC66">h</span><span style="color:#FF9966">r</span><span style="color:#FFCCCC">o</span><span style="color:#FF0066">m</span><span style="color:#00ffee">a</span><span style="color:#FF066">.</span><span style="color:#FFF051">A</span><span style="color:#FF9566">I</span>
 ### Intel AI4Y project
 
 -----
