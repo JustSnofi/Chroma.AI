@@ -5,6 +5,12 @@ import cv2
 from IPython.display import display
 import matplotlib
 from PIL import Image
+from scipy.spatial import KDTree
+from webcolors import (
+    CSS3_HEX_TO_NAMES,
+    hex_to_rgb,
+)
+
 
 
 data_set_path = r'data\color_names.csv' 
@@ -13,11 +19,6 @@ img_path = r'etc\test_img.jpg'
 img = Image.open(img_path).convert("RGB")
 img_cv2 = cv2.imread(img_path, 1)
 display(data_set)
-
-#Doesn't work for some reason
-r, g ,b = img.getpixel((616,459))
-a = (r,g,b)
-display(a)
 
 
 #MouseCords
@@ -59,6 +60,34 @@ def click_event(event, x, y, flags, params):
 
 
 
+#Convert rgb to names
+def convert_rgb_to_names(rgb_tuple):
+    
+    # a dictionary of all the hex and their respective names in css3
+    css3_db = CSS3_HEX_TO_NAMES
+    names = []
+    rgb_values = []
+    for color_hex, color_name in css3_db.items():
+        names.append(color_name)
+        rgb_values.append(hex_to_rgb(color_hex))
+    
+    kdt_db = KDTree(rgb_values)
+    distance, index = kdt_db.query(rgb_tuple)
+    return f'closest match: {names[index]}'
+
+
+
+
+
+#Get pixel color
+r, g ,b = img.getpixel((354,96))
+a = (r,g,b)
+display(a)
+print(convert_rgb_to_names((r,g,b)))
+
+
+
+#Main Process
 if __name__=="__main__":
   
     # reading the image
@@ -76,4 +105,3 @@ if __name__=="__main__":
   
     # close the window
     cv2.destroyAllWindows()
-
