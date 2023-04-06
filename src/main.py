@@ -80,7 +80,7 @@ def convert_rgb_to_names(rgb_tuple):
 
 
 #Get pixel color
-r, g ,b = img.getpixel((354,96))
+r, g ,b = img.getpixel((353,585))
 a = (r,g,b)
 display(a)
 print(convert_rgb_to_names((r,g,b)))
