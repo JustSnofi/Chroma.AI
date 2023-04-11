@@ -1,107 +1,61 @@
-import pandas as pd
-import seaborn as sb
 import numpy as np
+import pandas as pd
 import cv2
-from IPython.display import display
-import matplotlib
-from PIL import Image
-from scipy.spatial import KDTree
-from webcolors import (
-    CSS3_HEX_TO_NAMES,
-    hex_to_rgb,
-)
 
 
 
-data_set_path = r'data\color_names.csv' 
-data_set = pd.read_csv(data_set_path)
 img_path = r'etc\test_img.jpg' 
-img = Image.open(img_path).convert("RGB")
-img_cv2 = cv2.imread(img_path, 1)
-display(data_set)
+data_set_path = r'data\color_names.csv' 
+img = cv2.imread(img_path, 1)
+
+index=["Name", "Hex", "Red", "Green", "Blue"]
+csv = pd.read_csv(data_set_path, names=index, header=None)
 
 
-#MouseCords
-def click_event(event, x, y, flags, params):
-  
-    # checking for left mouse clicks
-    if event == cv2.EVENT_LBUTTONDOWN:
-  
-        # displaying the coordinates
-        # on the Shell
-        print(x, ' ', y)
-  
-        # displaying the coordinates
-        # on the image window
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        cv2.putText(img, str(x) + ',' +
-                    str(y), (x,y), font,
-                    1, (255, 0, 0), 2)
-        cv2.imshow('image', img)
-  
-    # checking for right mouse clicks     
-    if event==cv2.EVENT_RBUTTONDOWN:
-  
-        # displaying the coordinates
-        # on the Shell
-        print(x, ' ', y)
-  
-        # displaying the coordinates
-        # on the image window
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        b = img[y, x, 0]
-        g = img[y, x, 1]
-        r = img[y, x, 2]
-        cv2.putText(img, str(b) + ',' +
-                    str(g) + ',' + str(r),
-                    (x,y), font, 1,
-                    (255, 255, 0), 2)
-        cv2.imshow('image', img)
+clicked = False
+r = g = b = xpos = ypos = 0
+def recognize_color(R,G,B):
+    minimum = 10000
+    for i in range(len(csv)):
+        d = abs(R - int(csv.loc[i,"Red"])) + abs(G - int(csv.loc[i,"Green"]))+ abs(B - int(csv.loc[i,"Blue"]))
+        if(d<=minimum):
+            minimum = d
+            cname = csv.loc[i,"Name"]
+    return cname
+
+def mouse_click(event, x, y, flags, param):
+    if event == cv2.EVENT_LBUTTONDBLCLK:
+        global b,g,r,xpos,ypos, clicked
+        clicked = True
+        xpos = x
+        ypos = y
+        b,g,r = img[y,x]
+        b = int(b)
+        g = int(g)
+        r = int(r)
 
 
+cv2.namedWindow('Color Recognition App')
+cv2.setMouseCallback('Color Recognition App', mouse_click)
 
-#Convert rgb to names
-def convert_rgb_to_names(rgb_tuple):
+while(1):
+    cv2.imshow("Color Recognition App",img)
+    if (clicked):
     
-    # a dictionary of all the hex and their respective names in css3
-    css3_db = CSS3_HEX_TO_NAMES
-    names = []
-    rgb_values = []
-    for color_hex, color_name in css3_db.items():
-        names.append(color_name)
-        rgb_values.append(hex_to_rgb(color_hex))
-    
-    kdt_db = KDTree(rgb_values)
-    distance, index = kdt_db.query(rgb_tuple)
-    return f'closest match: {names[index]}'
+        #cv2.rectangle(image, startpoint, endpoint, color, thickness)-1 fills entire rectangle 
+        cv2.rectangle(img,(20,20), (750,60), (b,g,r), -1)
+        #Creating text string to display( Color name and RGB values )
+        text = recognize_color(r,g,b) + 'R=' + str(r) +  ' G='+ str(g) +  ' B='+ str(b)
+            
+        #cv2.putText(img,text,start,font(0-7),fontScale,color,thickness,lineType )
+        cv2.putText(img, text,(50,50),2,0.8,(255,255,255),2,cv2.LINE_AA)
+        #For very light colours we will display text in black colour
+        if(r+g+b>=600):
+            cv2.putText(img, text,(50,50),2,0.8,(0,0,0),2,cv2.LINE_AA)
+                
+        clicked=False
 
-
-
-
-
-#Get pixel color
-r, g ,b = img.getpixel((353,585))
-a = (r,g,b)
-display(a)
-print(convert_rgb_to_names((r,g,b)))
-
-
-
-#Main Process
-if __name__=="__main__":
-  
-    # reading the image
-    img = cv2.imread(img_path, 1)
-  
-    # displaying the image
-    cv2.imshow('image', img)
-  
-    # setting mouse handler for the image
-    # and calling the click_event() function
-    cv2.setMouseCallback('image', click_event)
-  
-    # wait for a key to be pressed to exit
-    cv2.waitKey(0)
-  
-    # close the window
-    cv2.destroyAllWindows()
+    #Break the loop when user hits 'esc' key    
+    if cv2.waitKey(20) & 0xFF ==27:
+        break
+cv2.destroyAllWindows()
