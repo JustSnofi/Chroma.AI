@@ -1,11 +1,12 @@
 import numpy as np
 import pandas as pd
 import cv2
+from gui import Application
 
 
-
-img_path = r'etc\test_img.jpg' 
-data_set_path = r'data\color_names.csv' 
+img_path = str(Application.select_file)
+# img_path = r'etc\test_img.jpg'
+data_set_path = r'data\color_names.csv'
 data_set = pd.read_csv(data_set_path)
 img = cv2.imread(img_path, 1)
 
@@ -41,7 +42,7 @@ cv2.namedWindow('Color Recognition App')
 cv2.setMouseCallback('Color Recognition App', mouse_click)
 
 # Main
-while(1):
+while True:
     cv2.imshow("Color Recognition App",img)
     if (clicked):
     
