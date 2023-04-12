@@ -54,7 +54,7 @@ def get_file_extension() -> str:
     return file_extension
    
 def make_user_data():
-    with open('.userdata\data.txt', 'w') as f:
+    with open('.userdata\data.csv', 'w') as f:
         f.write(file_path + '/n' + file_extension) 
 
 
