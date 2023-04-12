@@ -5,7 +5,7 @@ import numpy as np
 
 
 class Application(tk.Frame):
-    
+    '''GUI Application'''
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
@@ -27,6 +27,7 @@ class Application(tk.Frame):
         self.image_label.pack()
     
     def select_file(self):
+        global file_path
         file_path = filedialog.askopenfilename(filetypes=[("PNG files", "*.png"), ('JPEG files', "*.jpg"), ('JPEG files', "*.jpeg")])
         if file_path:
             img = Image.open(file_path)
@@ -40,6 +41,10 @@ class Application(tk.Frame):
             self.image_label.config(image=img_tk)
             self.image_label.image = img_tk
             return file_path
+    
+    def get_file_path() -> str:
+        '''Returns file_path'''
+        return file_path
     
 root = tk.Tk()
 app = Application(master=root)
