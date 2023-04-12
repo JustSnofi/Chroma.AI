@@ -11,8 +11,8 @@ class Application(tk.Frame):
         self.master = master
         self.master.geometry("600x600")
         self.master.title("ChromAi - color blind helper")
-        # icon_image = tk.PhotoImage(file="icon.png")
-        # self.master.iconphoto(True, icon_image)
+        icon_image = tk.PhotoImage(file="img\icon.png")
+        self.master.iconphoto(True, icon_image)
         self.pack()
         self.create_widgets()
     
