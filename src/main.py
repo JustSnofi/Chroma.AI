@@ -1,18 +1,17 @@
 import numpy as np
 import pandas as pd
 import cv2
+import gui
 
-
-
-img_path = r'etc\test_img.jpg' 
-data_set_path = r'data\color_names.csv' 
+img_path = gui.get_file_path()
+data_set_path = r'data\color_names.csv'
+data_set = pd.read_csv(data_set_path)
 img = cv2.imread(img_path, 1)
 
 index=["Name", "Hex", "Red", "Green", "Blue"]
 csv = pd.read_csv(data_set_path, names=index, header=None)
 
-
-clicked = False
+# Color Recognition
 r = g = b = xpos = ypos = 0
 def recognize_color(R,G,B):
     minimum = 10000
@@ -23,6 +22,8 @@ def recognize_color(R,G,B):
             cname = csv.loc[i,"Name"]
     return cname
 
+# Click
+clicked = False
 def mouse_click(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDBLCLK:
         global b,g,r,xpos,ypos, clicked
@@ -38,7 +39,8 @@ def mouse_click(event, x, y, flags, param):
 cv2.namedWindow('Color Recognition App')
 cv2.setMouseCallback('Color Recognition App', mouse_click)
 
-while(1):
+# Main
+while True:
     cv2.imshow("Color Recognition App",img)
     if (clicked):
     
@@ -59,3 +61,4 @@ while(1):
     if cv2.waitKey(20) & 0xFF ==27:
         break
 cv2.destroyAllWindows()
+cv2.waitKey(0)

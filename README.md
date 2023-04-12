@@ -5,8 +5,6 @@
 
 - [Discord](https://discord.gg/tNVMpaJbdh) 
 - [Trello](https://trello.com/invite/b/640b0c94b8ad1c25c6b12508/ATTIfd1c763c3cda5b4161bf919008812b2693C01590/Intel%20AI4Y%20Project)
-- [Site GitHub](https://github.com/Danos360/ChromAi-site)
-
 
 **Contributers/Collaborators: [Vladmir](https://github.com/StaaaaarFinger), [Tom](), [Dan](), [Adam](https://github.com/JustSnofi)** 
 
