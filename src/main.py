@@ -4,7 +4,7 @@ import cv2
 from gui import Application
 
 # img_path = r'etc\test_img.jpg'
-img_path = Application.return_path()
+img_path = Application.get_path()
 data_set_path = r'data\color_names.csv'
 data_set = pd.read_csv(data_set_path)
 img = cv2.imread(img_path, 1)
