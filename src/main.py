@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 import cv2
-from gui import Application
+import gui
 
-img_path = Application.get_file_path()
+img_path = gui.get_file_path()
 data_set_path = r'data\color_names.csv'
 data_set = pd.read_csv(data_set_path)
 img = cv2.imread(img_path, 1)

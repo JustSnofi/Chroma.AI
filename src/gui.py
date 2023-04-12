@@ -40,7 +40,7 @@ class Application(tk.Frame):
             img_tk = ImageTk.PhotoImage(img)
             self.image_label.config(image=img_tk)
             self.image_label.image = img_tk
-            make_user_data()
+            # make_user_data()
             return file_path
 
 def get_file_path() -> str:
@@ -49,10 +49,11 @@ def get_file_path() -> str:
 
 def get_file_extension() -> str:
     '''Returns file_path'''
+    global file_extension
     file_extension = pathlib.Path(file_path).suffix
     return file_extension
    
-def make_user_data(file_extension):
+def make_user_data():
     with open('.userdata\data.txt', 'w') as f:
         f.write(file_path + '/n' + file_extension) 
 
