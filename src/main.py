@@ -3,7 +3,6 @@ import pandas as pd
 import cv2
 from gui import Application
 
-# img_path = r'etc\test_img.jpg'
 img_path = Application.get_file_path()
 data_set_path = r'data\color_names.csv'
 data_set = pd.read_csv(data_set_path)

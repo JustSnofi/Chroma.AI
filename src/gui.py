@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 from PIL import ImageTk, Image
 import numpy as np
-
+import pathlib
 
 class Application(tk.Frame):
     '''GUI Application'''
@@ -40,11 +40,24 @@ class Application(tk.Frame):
             img_tk = ImageTk.PhotoImage(img)
             self.image_label.config(image=img_tk)
             self.image_label.image = img_tk
+            make_user_data()
             return file_path
-    
-    def get_file_path() -> str:
-        '''Returns file_path'''
-        return file_path
+
+def get_file_path() -> str:
+    '''Returns file_path'''
+    return file_path
+
+def get_file_extension() -> str:
+    '''Returns file_path'''
+    file_extension = pathlib.Path(file_path).suffix
+    return file_extension
+   
+def make_user_data(file_extension):
+    with open('.userdata\data.txt', 'w') as f:
+        f.write(file_path + '/n' + file_extension) 
+
+
+
     
 root = tk.Tk()
 app = Application(master=root)
