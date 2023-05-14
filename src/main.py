@@ -2,14 +2,30 @@ import numpy as np
 import pandas as pd
 import cv2
 import gui
+from imageai.Detection import ObjectDetection
+import os
 
+execution_path = os.getcwd()
+detector = ObjectDetection()
+detector.setModelTypeAsRetinaNet()
+detector.setModelPath(r"D:\School\Intel\src\__pycache__\retinanet_resnet50_fpn_coco-eeacb38b.pth")
+detector.loadModel()
 img_path = gui.get_file_path()
 data_set_path = r'data\color_names.csv'
 data_set = pd.read_csv(data_set_path)
 img = cv2.imread(img_path, 1)
+detections = detector.detectObjectsFromImage(input_image=os.path.join(execution_path , img_path), output_image_path=os.path.join(execution_path , "imagenew.jpg"))
+num = 0
 
 index=["Name", "Hex", "Red", "Green", "Blue"]
 csv = pd.read_csv(data_set_path, names=index, header=None)
+
+
+# Recognizing beta
+for eachObject in detections:
+        num =+ 1
+        print(num,": ", eachObject["name"] , " : " , eachObject["percentage_probability"] )
+
 
 # Color Recognition
 r = g = b = xpos = ypos = 0
