@@ -8,7 +8,7 @@ import os
 execution_path = os.getcwd()
 detector = ObjectDetection()
 detector.setModelTypeAsRetinaNet()
-detector.setModelPath(r"D:\School\Intel\src\__pycache__\retinanet_resnet50_fpn_coco-eeacb38b.pth")
+detector.setModelPath(r"C:\Users\tomra\OneDrive\Documents\GitHub\Chroma.AI\src\__pycache__\retinanet_resnet50_fpn_coco-eeacb38b.pth")
 detector.loadModel()
 img_path = gui.get_file_path()
 data_set_path = r'data\color_names.csv'
