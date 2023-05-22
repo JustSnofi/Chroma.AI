@@ -8,14 +8,17 @@ import os
 execution_path = os.getcwd()
 detector = ObjectDetection()
 detector.setModelTypeAsRetinaNet()
-detector.setModelPath(r"C:\Users\tomra\OneDrive\Documents\GitHub\Chroma.AI\src\__pycache__\retinanet_resnet50_fpn_coco-eeacb38b.pth")
+detector.setModelPath(r"data\model.pth")
 detector.loadModel()
 img_path = gui.get_file_path()
 data_set_path = r'data\color_names.csv'
 data_set = pd.read_csv(data_set_path)
 img = cv2.imread(img_path, 1)
-detections = detector.detectObjectsFromImage(input_image=os.path.join(execution_path , img_path), output_image_path=os.path.join(execution_path , "imagenew.jpg"))
+output_image_path=os.path.join(execution_path , "imagenew.jpg")
+input_image = os.path.join(execution_path , img_path)
+detections = detector.detectObjectsFromImage(input_image=input_image, output_image_path=output_image_path)
 num = 0
+
 
 index=["Name", "Hex", "Red", "Green", "Blue"]
 csv = pd.read_csv(data_set_path, names=index, header=None)
@@ -23,7 +26,7 @@ csv = pd.read_csv(data_set_path, names=index, header=None)
 
 # Recognizing beta
 for eachObject in detections:
-        num =+ 1
+        num += 1
         print(num,": ", eachObject["name"] , " : " , eachObject["percentage_probability"] )
 
 
@@ -57,7 +60,7 @@ cv2.setMouseCallback('Color Recognition App', mouse_click)
 
 # Main
 while True:
-    cv2.imshow("Color Recognition App",img)
+    cv2.imshow("Color Recognition App", cv2.imread(output_image_path)) #cv2.resize(output_image_path, (640, 480))
     if (clicked):
     
         #cv2.rectangle(image, startpoint, endpoint, color, thickness)-1 fills entire rectangle 
