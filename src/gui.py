@@ -1,65 +1,182 @@
+import customtkinter as ctk
+import tkinter as tk
 import tkinter as tk
 from tkinter import filedialog
 from PIL import ImageTk, Image
 import numpy as np
-import pathlib
 
-class Application(tk.Frame):
-    '''GUI Application'''
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.master.geometry("600x600")
-        self.master.title("ChromAi - color blind helper")
-        icon_image = tk.PhotoImage(file="img\icon.png")
-        self.master.iconphoto(True, icon_image)
-        self.pack()
-        self.create_widgets()
-    
-    def create_widgets(self):
-        self.select_file_button = tk.Button(self, text="Select Image", command=self.select_file)
-        self.select_file_button.pack()
+# Supported modes : Light, Dark, System
+ctk.set_appearance_mode('dark')
+# Supported themes : green, dark-blue, blue
+ctk.set_default_color_theme("green")   
+
+appWidth, appHeight = 700, 700
+
+
+# App Class
+class App(ctk.CTk):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.title("GUI Application")
+        self.geometry(f"{appWidth}x{appHeight}")
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(1, weight=1)
+        self.appearanceVar = tk.StringVar(self)
+        self.themeVar = tk.StringVar(self)
+        self.minsize(330, 830)
+        font = ctk.CTkFont(family='arial', size=18)
+        fontTitle = ctk.CTkFont(family='arial', size=22, slant='roman')
+        canvasScreen = ctk.CTkCanvas(self, width = 350, height = 350)
+        canvasScreen.create_line(300,300,300,300)
+
+        # File selection button
+        self.fileButton = ctk.CTkButton(self,
+                                        text = 'Choose Image', font=font, command=self.selectFile)
+        self.fileButton.grid(row=0, rowspan=2, column=0, columnspan=2, 
+                            padx=50, 
+                            pady=30, ipady = 15,
+                            sticky="nw")
+ 
+        # Image Label
+        # self.imageLabel = ctk.CTkLabel(self,
+        #                             text="Chosen image")
+        # self.imageLabel.grid(row=2, column=0,
+        #                       padx=20, pady=0,
+        #                       sticky="w")
+ 
+        # Blindness Label
+        self.blindnessLabel = ctk.CTkLabel(self,
+                                    text="Blindness type", font=fontTitle)
+        self.blindnessLabel.grid(row=0, column=0, columnspan = 1,
+                                padx=50, 
+                                pady=120,
+                                sticky="nw")
+
+ 
+        # Blindness Radio Buttons
+        self.blindnessVar = tk.StringVar(value="Normal")
+ 
+        self.deuRadioButton = ctk.CTkRadioButton(self,
+                                  text="Deuteranopia", font=font,
+                                  variable=self.blindnessVar,
+                                            value="He is")
+        self.deuRadioButton.grid(row=0, column=0, columnspan=3, 
+                                padx=50, 
+                                pady=160,
+                                sticky="nw")
+ 
+        self.triRadioButton = ctk.CTkRadioButton(self,
+                                      text="Tritanopia", font=font,
+                                      variable=self.blindnessVar,
+                                      value="She is")
+        self.triRadioButton.grid(row=0, column=0, columnspan=3, 
+                                padx=50, 
+                                pady=200,
+                                sticky="nw")
+         
+        self.monRadioButton = ctk.CTkRadioButton(self,
+                                    text="Monochromacy", font=font,
+                                    variable=self.blindnessVar,
+                                            value="They are")
+        self.monRadioButton.grid(row=0, column=0, columnspan=3, 
+                                padx=50, 
+                                pady=240,
+                                sticky="nw")
+ 
+  
+        # Occupation Label
+        self.occupationLabel = ctk.CTkLabel(self,
+                                            text="Object Selection", font=font,)
+        self.occupationLabel.grid(row=0, column=0, columnspan=3, 
+                                padx=50,
+                                pady=320,
+                                sticky="nw")
+ 
+        # Occupation combo box
+        self.occupationOptionMenu = ctk.CTkOptionMenu(self,
+                                        values=["Student",
+                                        "Working Professional"], font=font,)
+        self.occupationOptionMenu.grid(row=0, column=0, columnspan=3, 
+                                        padx=50,
+                                        pady=360,
+                                        sticky="nw")
+ 
+        # Generate Button
+        self.generateResultsButton = ctk.CTkButton(self,
+                                         text="Generate Results", font=font,)
+        self.generateResultsButton.grid(row=0, column=0, columnspan=3, 
+                                        padx=50, 
+                                        pady=480, ipady = 15,
+                                        sticky="nw")
         
-        self.color_label = tk.Label(self, text="Color in Center Pixel: ")
-        self.color_label.pack()
+        # Appearance
+        self.appearanceLabel = ctk.CTkLabel(self,
+                                    text="Appearance", font=font)
         
-        self.image_label = tk.Label(self)
-        self.image_label.pack()
-    
-    def select_file(self):
-        global file_path
-        file_path = filedialog.askopenfilename(filetypes=[("PNG files", "*.png"), ('JPEG files', "*.jpg"), ('JPEG files', "*.jpeg")])
-        if file_path:
-            img = Image.open(file_path)
-            img_array = np.array(img)
-            center_pixel_color = img_array[img_array.shape[0]//2, img_array.shape[1]//2]
-            self.color_label.config(text=f"Color in Center Pixel: {center_pixel_color}")
+        self.appearanceLabel.grid(row=0, column=0, columnspan = 1,
+                                padx=50, 
+                                pady=580,
+                                sticky="nw")
+        
+        self.appearanceOptionMenu = ctk.CTkOptionMenu(self,
+                                        values=["System", "Light", "Dark"], 
+                                        variable = self.appearanceVar, font=font,
+                                        command=self.selectAppearance)
+
+        self.appearanceOptionMenu.grid(row=0, column=0, columnspan=3, 
+                                        padx=50,
+                                        pady=620,
+                                        sticky="nw")
+        
+        # Theme
+        self.themeLabel = ctk.CTkLabel(self,
+                                    text="Theme", font=font)
+        
+        self.themeLabel.grid(row=0, column=0, columnspan = 1,
+                                padx=50, 
+                                pady=660,
+                                sticky="nw")
+        
+        self.themeOptionMenu = ctk.CTkOptionMenu(self,
+                                        values=["green", "dark-blue", "blue"], 
+                                        variable = self.themeVar, font=font,
+                                        command=self.selectTheme)
+
+        self.themeOptionMenu.grid(row=0, column=0, columnspan=3, 
+                                        padx=50,
+                                        pady=700,
+                                        sticky="nw")
+ 
+    def selectAppearance(self, appearanceVar):
+        ctk.set_appearance_mode(appearanceVar)
+
+    def selectTheme(self, themeVar):
+        ctk.set_default_color_theme(themeVar)
+
+    def selectFile(self):
+        global filePath
+        filePath = filedialog.askopenfilename(filetypes=[("PNG files", "*.png"), ('JPEG files', "*.jpg"), ('JPEG files', "*.jpeg")])
+        if filePath:
+            img = Image.open(filePath)
             
-            img = Image.open(file_path)
-            img = img.resize((300, 300))
-            img_tk = ImageTk.PhotoImage(img)
-            self.image_label.config(image=img_tk)
-            self.image_label.image = img_tk
-            # make_user_data()
-            return file_path
+            if 1700 > img.size[0]:
+                resX = img.size[0]
+            elif 1700 <= img.size[0]:
+                resX = 1700
+            if 500 > img.size[1]:
+                resY = img.size[1]
+            elif 500 <= img.size[1]:
+                resY = 500
+            
+            originalImage = ctk.CTkImage(img, size=(resX ,resY))
+            self.originalImageLabel = ctk.CTkLabel(self, image=originalImage, 
+                                                   height= 10, width= 10)
+            self.originalImageLabel.grid(row=0, column=1,
+                                         padx = 0, 
+                                         pady = 0, ipadx = 2/self.winfo_height(),
+                                         sticky='n')
+            return filePath
 
-def get_file_path() -> str:
-    '''Returns file_path'''
-    return file_path
-
-def get_file_extension() -> str:
-    '''Returns file_path'''
-    global file_extension
-    file_extension = pathlib.Path(file_path).suffix
-    return file_extension
-   
-def make_user_data():
-    with open('.userdata\data.csv', 'w') as f:
-        f.write(file_path + '/n' + file_extension) 
-
-
-
-    
-root = tk.Tk()
-app = Application(master=root)
-app.mainloop()
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()

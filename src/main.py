@@ -10,7 +10,7 @@ detector = ObjectDetection()
 detector.setModelTypeAsRetinaNet()
 detector.setModelPath(r"data\model.pth")
 detector.loadModel()
-img_path = gui.get_file_path()
+img_path = gui.selectFile()
 data_set_path = r'data\color_names.csv'
 data_set = pd.read_csv(data_set_path)
 img = cv2.imread(img_path, 1)
