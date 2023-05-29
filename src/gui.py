@@ -4,13 +4,14 @@ import tkinter as tk
 from tkinter import filedialog
 from PIL import ImageTk, Image
 import numpy as np
+import os
 
 # Supported modes : Light, Dark, System
 ctk.set_appearance_mode('dark')
 # Supported themes : green, dark-blue, blue
 ctk.set_default_color_theme("green")   
 
-appWidth, appHeight = 700, 700
+appWidth, appHeight = 900, 880
 
 
 # App Class
@@ -23,7 +24,8 @@ class App(ctk.CTk):
         self.rowconfigure(1, weight=1)
         self.appearanceVar = tk.StringVar(self)
         self.themeVar = tk.StringVar(self)
-        self.minsize(330, 830)
+        self.modelVar = tk.StringVar(self)
+        self.minsize(840, 300)
         font = ctk.CTkFont(family='arial', size=18)
         fontTitle = ctk.CTkFont(family='arial', size=22, slant='roman')
         canvasScreen = ctk.CTkCanvas(self, width = 350, height = 350)
@@ -92,11 +94,10 @@ class App(ctk.CTk):
                                 pady=320,
                                 sticky="nw")
  
-        # Occupation combo box
-        self.occupationOptionMenu = ctk.CTkOptionMenu(self,
-                                        values=["Student",
-                                        "Working Professional"], font=font,)
-        self.occupationOptionMenu.grid(row=0, column=0, columnspan=3, 
+        # Obj drop box
+        self.objOptionMenu = ctk.CTkOptionMenu(self,
+                                        values=["None"], font=font,)
+        self.objOptionMenu.grid(row=0, column=0, columnspan=3, 
                                         padx=50,
                                         pady=360,
                                         sticky="nw")
@@ -108,7 +109,16 @@ class App(ctk.CTk):
                                         padx=50, 
                                         pady=480, ipady = 15,
                                         sticky="nw")
-        
+
+ 
+        # Generate Button
+        self.generateResultsButton = ctk.CTkButton(self,
+                                         text="Generate Results", font=font,)
+        self.generateResultsButton.grid(row=0, column=0, columnspan=3, 
+                                        padx=50, 
+                                        pady=480, ipady = 15,
+                                        sticky="nw")    
+
         # Appearance
         self.appearanceLabel = ctk.CTkLabel(self,
                                     text="Appearance", font=font)
@@ -146,7 +156,40 @@ class App(ctk.CTk):
                                         padx=50,
                                         pady=700,
                                         sticky="nw")
+        
+        # Model Select and install https://imageai.readthedocs.io/en/latest/detection/ https://github.com/OlafenwaMoses/ImageAI/releases
+        
+        self.themeLabel = ctk.CTkLabel(self,
+                                    text="Model Settings", font=font)
+        
+        self.themeLabel.grid(row=0, column=0, columnspan = 1,
+                                padx=50, 
+                                pady=780,
+                                sticky="nw")
+        
+        self.modelInstallButton = ctk.CTkButton(self, text="Download models",
+                                                command=self.downloadModels)
+        
+        self.modelInstallButton.grid(row=0, column=0, columnspan=3, 
+                                        padx=50,
+                                        pady=820,
+                                        sticky="nw")
+        
+        self.modelOptionMenu = ctk.CTkOptionMenu(self,
+                                        values=["RetinaNet", "YOLOv3", "TinyYOLOv3"], font=font, variable = self.modelVar, command=self.modelSelect) 
+        
+        self.modelOptionMenu.grid(row=0, column=0, columnspan=3, 
+                                        padx=50,
+                                        pady=860,
+                                        sticky="nw")
  
+    def downloadModels(self):
+        os.system('models\install.bat')
+    
+    def modelSelect(self, modelVar):
+        if modelVar == 'RetinaNet':
+            pass
+    
     def selectAppearance(self, appearanceVar):
         ctk.set_appearance_mode(appearanceVar)
 
