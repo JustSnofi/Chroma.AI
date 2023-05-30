@@ -1,3 +1,8 @@
+# git ignoring models
+models/yolov3.pt
+models/tiny-yolov3.pt
+models/retinanet_resnet50_fpn_coco-eeacb38b.pth
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
