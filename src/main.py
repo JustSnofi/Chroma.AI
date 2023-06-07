@@ -13,10 +13,99 @@ ctk.set_appearance_mode('dark')
 ctk.set_default_color_theme("green")   
 
 appWidth, appHeight = 900, 880
+class Home(ctk.CTk):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.title("ChromAi - color blind helper")
+        self.resizable(False,False)
+        self.geometry("700x680")
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(1, weight=1)
+        # self.minsize(700, 680)
+        font = ctk.CTkFont(family='arial', size=20)
+        fontTitle = ctk.CTkFont(family='arial', size=65, slant='roman')
+
+        # ChromaAi Title
+        self.appearanceLabel = ctk.CTkLabel(self,
+                                    text="ChromAi", font=fontTitle)
+        
+        self.appearanceLabel.grid(row=0, column=0, 
+                                        padx=5,
+                                        pady=0, ipadx = 200, ipady = 35,
+                                        sticky="nw")
+
+        # Start Button
+        self.startButton = ctk.CTkButton(self,
+                                         text="Start", font=font, command=mainOpen)
+        self.startButton.grid(row=0, column=0, columnspan=3, 
+                                        padx=250, 
+                                        pady=190, ipadx = 40, ipady = 30,
+                                        sticky="nw")
+        
+        # settings Button
+        self.settingsButton = ctk.CTkButton(self,
+                                        text="Settings", font=font,command=setting_open)
+        self.settingsButton.grid(row=0, column=0, columnspan=3, 
+                                        padx=250, 
+                                        pady=300, ipadx = 40, ipady = 30,
+                                        sticky="nw")  
+
+        # About us Button
+        self.weButton = ctk.CTkButton(self, 
+                                        text="About us", font=font, width=50, height=20,command=about_usOpen)
+        self.weButton.grid(row=0, column=0, 
+                                        padx=5, 
+                                        pady=15,
+                                        sticky="sw")
 
 
-# App Class
-class App(ctk.CTk):
+#Settings page
+class Settings(ctk.CTk):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.title("ChromAi - Settings")
+        self.resizable(False,False)
+        self.geometry(f"{appWidth}x{appHeight}")
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(1, weight=1)
+        # self.minsize(700, 680)
+        font = ctk.CTkFont(family='arial', size=20)
+        fontTitle = ctk.CTkFont(family='arial', size=65, slant='roman')
+
+        # ChromaAi Title
+        self.appearanceLabel = ctk.CTkLabel(self,
+                                    text="Settings", font=fontTitle)
+        
+        self.appearanceLabel.grid(row=0, column=0, 
+                                        padx=5,
+                                        pady=0, ipadx = 200, ipady = 35,
+                                        sticky="nw")
+
+         
+#About us page
+class AboutUs(ctk.CTk):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.title("ChromAi - About us")
+        self.resizable(False,False)
+        self.geometry("400x400")
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(1, weight=1)
+        # self.minsize(700, 680)
+        font = ctk.CTkFont(family='arial', size=20)
+        fontTitle = ctk.CTkFont(family='arial', size=45, slant='roman')
+
+        # ChromaAi Title
+        self.appearanceLabel = ctk.CTkLabel(self,
+                                    text="About us", font=fontTitle)
+        
+        self.appearanceLabel.grid(row=0, column=0, 
+                                        padx=5,
+                                        pady=0, ipadx = 20, ipady = 20,
+                                        sticky="nw")
+
+# Main Window Class
+class Main(ctk.CTk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.title("GUI Application")
@@ -217,8 +306,7 @@ class App(ctk.CTk):
                 resY = 500
             
             originalImage = ctk.CTkImage(img, size=(resX ,resY))
-            self.originalImageLabel = ctk.CTkLabel(self, image=originalImage, 
-                                                   height= 10, width= 10)
+            self.originalImageLabel = ctk.CTkLabel(self, image=originalImage, height= 10, width= 10)
             self.originalImageLabel.grid(row=0, column=1,
                                          padx = 0, 
                                          pady = 0, ipadx = 2/self.winfo_height(),
@@ -236,5 +324,26 @@ class App(ctk.CTk):
             return filePath
 
 if __name__ == "__main__":
-    app = App()
-    app.mainloop()
+    settings = Settings()
+
+if __name__ == "__main__":
+    about_us= AboutUs()
+
+if __name__ == "__main__":
+    main = Main()
+
+def about_usOpen():
+    about_us.mainloop()
+
+def setting_open():
+    home.destroy()
+    settings.mainloop()
+
+def mainOpen():
+    home.destroy()
+    main.mainloop()
+
+if __name__ == "__main__":
+    home = Home()
+    home.mainloop()
+
