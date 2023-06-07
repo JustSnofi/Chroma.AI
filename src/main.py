@@ -194,7 +194,7 @@ class Main(ctk.CTk):
  
         # Generate Button
         self.generateResultsButton = ctk.CTkButton(self,
-                                         text="Generate Results", font=font,)
+                                         text="Generate Results", font=font, command=self.renderImage)
         self.generateResultsButton.grid(row=0, column=0, columnspan=3, 
                                         padx=50, 
                                         pady=480, ipady = 15,
@@ -291,11 +291,12 @@ class Main(ctk.CTk):
         ctk.set_default_color_theme(themeVar)
 
     def selectFile(self):
-        global filePath
+        global resX, resY, newFilePath, originalImage, filePath
         filePath = filedialog.askopenfilename(filetypes=[("PNG files", "*.png"), ('JPEG files', "*.jpg"), ('JPEG files', "*.jpeg")])
-        newFilePath = 'img\testingimagenew.jpg'
+        newFilePath = 'img\testingimagenew.png'
+        img = Image.open(filePath)
+        
         if filePath:
-            img = Image.open(filePath)
             if 1700 > img.size[0]:
                 resX = img.size[0]
             elif 1700 <= img.size[0]:
@@ -305,32 +306,29 @@ class Main(ctk.CTk):
             elif 500 <= img.size[1]:
                 resY = 500
             
-            originalImage = ctk.CTkImage(img, size=(resX ,resY))
-            self.originalImageLabel = ctk.CTkLabel(self, image=originalImage, height= 10, width= 10)
-            self.originalImageLabel.grid(row=0, column=1,
-                                         padx = 0, 
-                                         pady = 0, ipadx = 2/self.winfo_height(),
-                                         sticky='n')
-            
-            sleep(3000)
-            newImg = Image.open(newFilePath)    
-            newImage = ctk.CTkImage(newImg, size=(resX ,resY))
-            self.newImageLabel = ctk.CTkLabel(self, image=originalImage, 
-                                                   height= 10, width= 10)
-            self.newImageLabel.grid(row=0, column=1,
-                                         padx = 0, 
-                                         pady = 2/self.winfo_height(), ipadx = 0,
-                                         sticky='n')
-            return filePath
+        originalImage = ctk.CTkImage(img, size=(resX ,resY))
+        self.originalImageLabel = ctk.CTkLabel(self, image=originalImage, height=10, width=10)
+        self.originalImageLabel.grid(row=0, column=1,
+                                     padx = 0, 
+                                     pady = 0, ipadx = 2/self.winfo_height(),
+                                     sticky='n')
+        
+    def renderImage(self):
+        newImg = Image.open(newFilePath)    
+        newImg = ctk.CTkImage(newImg, size=(resX ,resY))
+        self.newImageLabel = ctk.CTkLabel(self, image=newImg, 
+                                               height= 10, width= 10)
+        self.newImageLabel.grid(row=0, column=1,
+                                     padx = 0, 
+                                     pady = 2/self.winfo_height(), ipadx = 0,
+                                     sticky='n')
 
 if __name__ == "__main__":
     settings = Settings()
-
-if __name__ == "__main__":
     about_us= AboutUs()
-
-if __name__ == "__main__":
     main = Main()
+    home = Home()
+    home.mainloop()
 
 def about_usOpen():
     about_us.mainloop()
@@ -342,8 +340,4 @@ def setting_open():
 def mainOpen():
     home.destroy()
     main.mainloop()
-
-if __name__ == "__main__":
-    home = Home()
-    home.mainloop()
 
