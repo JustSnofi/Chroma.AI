@@ -12,6 +12,22 @@ ctk.set_appearance_mode('dark')
 # Supported themes : green, dark-blue, blue
 ctk.set_default_color_theme("green")   
 
+
+
+
+def about_usOpen():
+    about_us.mainloop()
+
+def setting_open():
+    home.destroy()
+    settings.mainloop()
+
+def mainOpen():
+    home.destroy()
+    main.mainloop()
+
+
+
 appWidth, appHeight = 900, 880
 class Home(ctk.CTk):
     def __init__(self, *args, **kwargs):
@@ -330,14 +346,4 @@ if __name__ == "__main__":
     home = Home()
     home.mainloop()
 
-def about_usOpen():
-    about_us.mainloop()
-
-def setting_open():
-    home.destroy()
-    settings.mainloop()
-
-def mainOpen():
-    home.destroy()
-    main.mainloop()
 
