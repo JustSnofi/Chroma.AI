@@ -10,22 +10,7 @@ from time import sleep
 # Supported modes : Light, Dark, System
 ctk.set_appearance_mode('dark')
 # Supported themes : green, dark-blue, blue
-ctk.set_default_color_theme("green")   
-
-
-
-
-def about_usOpen():
-    about_us.mainloop()
-
-def setting_open():
-    home.destroy()
-    settings.mainloop()
-
-def mainOpen():
-    home.destroy()
-    main.mainloop()
-
+ctk.set_default_color_theme("green")  
 
 
 appWidth, appHeight = 900, 880
@@ -339,11 +324,29 @@ class Main(ctk.CTk):
                                      pady = 2/self.winfo_height(), ipadx = 0,
                                      sticky='n')
 
+def about_usOpen():
+    about_us.mainloop()
+
+def setting_open():
+    home.destroy()
+    settings.mainloop()
+
+def mainOpen():
+    home.destroy()
+    main.mainloop()
+
+
 if __name__ == "__main__":
-    settings = Settings()
-    about_us= AboutUs()
+    '''
+    
+    !!!README!!! : main = Main() needs to be always at the top or it will cause a bug
+    
+    '''
     main = Main()
     home = Home()
+    settings = Settings()
+    about_us= AboutUs()
     home.mainloop()
+
 
 
