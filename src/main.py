@@ -7,6 +7,7 @@ import os
 import detection as dt
 from time import sleep
 from requests import get
+import threading
 
 # Supported modes : Light, Dark, System
 ctk.set_appearance_mode('dark')
@@ -31,12 +32,15 @@ appName = 'Chroma.AI'
 
 appLogoPath = r'img\icon.ico'
 
+modelsCount = 0
+
 appWidth, appHeight = 900, 880
 
 newFilePath = r'img\output\testingimagenew.jpg'
 
 class Loading(ctk.CTk):
     def __init__(self, *args, **kwargs):
+        global modelsCount
         super().__init__(*args, **kwargs)
         self.title(appName + "- Loading")
         self.iconbitmap(appLogoPath)
@@ -44,6 +48,8 @@ class Loading(ctk.CTk):
         self.geometry("700x680")
         self.columnconfigure(1, weight=1)
         self.rowconfigure(1, weight=1)
+        self.countingVar = tk.StringVar()
+        self.countingVar.set(f'{modelsCount} Models downloaded out of 3')
         # self.minsize(700, 680)
         font = ctk.CTkFont(family='arial', size=20)
         fontTitle = ctk.CTkFont(family='arial', size=65, slant='roman')
@@ -57,8 +63,31 @@ class Loading(ctk.CTk):
                                         sticky="nw")
         
         self.appearanceLabel2 = ctk.CTkLabel(self, text='Loading, we will finish shortly after...', font=font)
-
         self.appearanceLabel2.grid(row = 1, column = 0)
+
+        self.modelCountingLabel = ctk.CTkLabel(self, text=self.countingVar, font=font)
+        self.modelCountingLabel.grid(row = 2, column = 0 , sticky = 's')
+        
+        # for path in os.listdir('models/'):
+        #     if os.path.isfile(os.path.join('models/', path)):
+        #         modelsCount += 1
+        # while modelsCount != 4:
+        #     thread1 = threading.Thread(target=downloadModels)
+        #     thread1.start()
+        # else:
+        #     self.destroy
+        #     Main.mainloop(self)
+
+        thread1 = threading.Thread(target=downloadModels)
+        thread1.start()
+        self.after(30000, mainOpen)
+
+            
+            
+        
+
+
+    
 
 class Home(ctk.CTk):
     def __init__(self, *args, **kwargs):
@@ -305,14 +334,6 @@ class Main(ctk.CTk):
                             pady=780,
                             sticky="nw")
         
-        self.modelInstallButton = ctk.CTkButton(self, text="Download models",
-                                                command=self.downloadModels)
-        
-        self.modelInstallButton.grid(row=0, column=0, columnspan=3, 
-                                    padx=50,
-                                    pady=820,
-                                    sticky="nw")
-        
         self.modelOptionMenu = ctk.CTkOptionMenu(self,
                                         values=["RetinaNet", "YOLOv3", "TinyYOLOv3"], font=font, variable = self.modelVar, command=self.modelSelect) 
         
@@ -321,9 +342,6 @@ class Main(ctk.CTk):
                                         pady=860,
                                         sticky="nw")
  
-    def downloadModels(self):
-        os.system('models\install.bat')
-    
     def modelSelect(self, modelVar):
         if modelVar == 'RetinaNet':
             return 'models\retinanet_resnet50_fpn_coco-eeacb38b.pth'
@@ -359,11 +377,6 @@ class Main(ctk.CTk):
                                      sticky='n')
         
     def renderImage(self):
-
-        dt.RetinaNet(filePath)
-
-        sleep(10)
-        
         newImg = Image.open(newFilePath)    
         newImg = ctk.CTkImage(newImg, size=(resX ,resY))
         self.newImageLabel = ctk.CTkLabel(self, image=newImg, 
@@ -380,18 +393,20 @@ def download_file(url, destination):
     with open(destination, 'wb') as file:
         file.write(response.content)
 
+def RetinaNet():
+    thread2 = dt.RetinaNet(filePath)
+    thread2.start()
+    thread2.join()
+
 def downloadModels():
     '''Downloads and Checks if models exist.'''
-    
-    count = 0
-    for path in os.listdir('models/'):
-        if os.path.isfile(os.path.join('models/', path)):
-            count += 1
+    global modelsCount
+    for link, destination in zip(links, destinations):
+        print('downloading')
+        download_file(link, destination)
+        modelsCount += 1
+        print('downloaded')
 
-    if count != 4:
-        for link, destination in zip(links, destinations):
-            download_file(link, destination)
-        
 def about_usOpen():
     about_us.mainloop()
 
@@ -403,10 +418,9 @@ def mainOpen():
     home.destroy()
     main.mainloop()
 
-def loadingAtStart():
-    loading.mainloop()
-    sleep(10)
+def homeOpen():
     loading.destroy()
+    home.mainloop()
 
 if __name__ == "__main__":
     '''
@@ -419,11 +433,8 @@ if __name__ == "__main__":
     loading = Loading()
     settings = Settings()
     about_us= AboutUs()
-    
-    downloadModels()
-    
-    home.mainloop()
-    
+
+    loading.mainloop()
 
 
 
