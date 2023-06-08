@@ -8,7 +8,7 @@ detector = ObjectDetection()
 def RetinaNet(img_path):
     num = 0
     detector.setModelTypeAsRetinaNet()
-    detector.setModelPath(r"models\retinanet_resnet50_fpn_coco-eeacb38b.pth")
+    detector.setModelPath(r"models\RetinaNet.pth")
     detector.loadModel()
     output_image_path= r"img\testingimagenew.jpg"
     input_image = os.path.join(execution_path , img_path)
@@ -22,7 +22,7 @@ def RetinaNet(img_path):
 def YoloV3(img_path):
     num = 0
     detector.setModelTypeAsYOLOv3()
-    detector.setModelPath(r"models\retinanet_resnet50_fpn_coco-eeacb38b.pth")
+    detector.setModelPath(r"models\TinyYoloV3.pt")
     detector.loadModel()
     output_image_path=os.path.join(execution_path , "imagenew.jpg")
     input_image = os.path.join(execution_path , img_path)
@@ -35,7 +35,7 @@ def YoloV3(img_path):
 def TinyYoloV3(img_path):
     num = 0
     detector.setModelTypeAsTinyYOLOv3()
-    detector.setModelPath(r"models\retinanet_resnet50_fpn_coco-eeacb38b.pth")
+    detector.setModelPath(r"models\YoloV3.pt")
     detector.loadModel()
     output_image_path=os.path.join(execution_path , "imagenew.jpg")
     input_image = os.path.join(execution_path , img_path)

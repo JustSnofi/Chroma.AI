@@ -6,18 +6,71 @@ import numpy as np
 import os
 import detection as dt
 from time import sleep
+from requests import get
 
 # Supported modes : Light, Dark, System
 ctk.set_appearance_mode('dark')
 # Supported themes : green, dark-blue, blue
 ctk.set_default_color_theme("green")  
 
+links = [
+    'https://github.com/OlafenwaMoses/ImageAI/releases/download/3.0.0-pretrained/retinanet_resnet50_fpn_coco-eeacb38b.pth/',
+    'https://github.com/OlafenwaMoses/ImageAI/releases/download/3.0.0-pretrained/yolov3.pt/',
+    'https://github.com/OlafenwaMoses/ImageAI/releases/download/3.0.0-pretrained/tiny-yolov3.pt/'
+]
+
+destinations = [
+    'models/RetinaNet.pth',
+    'models/YoloV3.pt',
+    'models/TinyYoloV3.pt'
+]
+
+objValues = ['None']
+
+appName = 'Chroma.AI'
+
+appLogoPath = r'img\icon.ico'
 
 appWidth, appHeight = 900, 880
+
+newFilePath = r'img\output\testingimagenew.jpg'
+
+class Loading(ctk.CTk):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.title(appName + "- Loading")
+        self.iconbitmap(appLogoPath)
+        self.resizable(False,False)
+        self.geometry("700x680")
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(1, weight=1)
+        # self.minsize(700, 680)
+        font = ctk.CTkFont(family='arial', size=20)
+        fontTitle = ctk.CTkFont(family='arial', size=65, slant='roman')
+
+        self.appearanceLabel1 = ctk.CTkLabel(self,
+                                    text="Loading...", font=fontTitle)
+        
+        self.appearanceLabel1.grid(row=0, column=0, 
+                                        padx=5,
+                                        pady=0, ipadx = 200, ipady = 35,
+                                        sticky="nw")
+        
+        self.appearanceLabel2 = ctk.CTkLabel(self, text='Loading, we will finish shortly after...', font=font)
+
+        self.appearanceLabel2.grid(row = 1, column = 0)
+
 class Home(ctk.CTk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.title("ChromAi - color blind helper")
+        
+        # !!!Tried to set background as an image - didnt work!!!
+        # homeBG = ctk.CTkImage(Image.open('img\icon_bg.png'))
+        # self.backgroundLabel = ctk.CTkLabel(self, image=homeBG)
+        # self.backgroundLabel.place(x=0, y=0, relwidth=1, relheight=1)
+        
+        self.title(appName + " - color blind helper")
+        self.iconbitmap(appLogoPath)
         self.resizable(False,False)
         self.geometry("700x680")
         self.columnconfigure(1, weight=1)
@@ -28,7 +81,7 @@ class Home(ctk.CTk):
 
         # ChromaAi Title
         self.appearanceLabel = ctk.CTkLabel(self,
-                                    text="ChromAi", font=fontTitle)
+                                    text=appName, font=fontTitle)
         
         self.appearanceLabel.grid(row=0, column=0, 
                                         padx=5,
@@ -64,7 +117,8 @@ class Home(ctk.CTk):
 class Settings(ctk.CTk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.title("ChromAi - Settings")
+        self.title(appName + "- Settings")
+        self.iconbitmap(appLogoPath)
         self.resizable(False,False)
         self.geometry(f"{appWidth}x{appHeight}")
         self.columnconfigure(1, weight=1)
@@ -88,6 +142,7 @@ class AboutUs(ctk.CTk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.title("ChromAi - About us")
+        self.iconbitmap(appLogoPath)
         self.resizable(False,False)
         self.geometry("400x400")
         self.columnconfigure(1, weight=1)
@@ -109,7 +164,8 @@ class AboutUs(ctk.CTk):
 class Main(ctk.CTk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.title("GUI Application")
+        self.title(appName)
+        self.iconbitmap(appLogoPath)
         self.geometry(f"{appWidth}x{appHeight}")
         self.columnconfigure(1, weight=1)
         self.rowconfigure(1, weight=1)
@@ -187,7 +243,7 @@ class Main(ctk.CTk):
  
         # Obj drop box
         self.objOptionMenu = ctk.CTkOptionMenu(self,
-                                        values=["None"], font=font,)
+                                        values=objValues, font=font,)
         self.objOptionMenu.grid(row=0, column=0, columnspan=3, 
                                         padx=50,
                                         pady=360,
@@ -283,40 +339,59 @@ class Main(ctk.CTk):
         ctk.set_default_color_theme(themeVar)
 
     def selectFile(self):
-        global resX, resY, newFilePath, originalImage, filePath, newFilePath
+        global resX, resY, originalImage, filePath
         filePath = filedialog.askopenfilename(filetypes=[("PNG files", "*.png"), ('JPEG files', "*.jpg"), ('JPEG files', "*.jpeg")])
-        newFilePath = 'img\testingimagenew.png'
         img = Image.open(filePath)
         if filePath:
             if 1700 > img.size[0]:
                 resX = img.size[0]
             elif 1700 <= img.size[0]:
                 resX = 1700
-            if 500 > img.size[1]:
+            if 470 > img.size[1]:
                 resY = img.size[1]
-            elif 500 <= img.size[1]:
-                resY = 500
+            elif 470 <= img.size[1]:
+                resY = 470
             
         originalImage = ctk.CTkImage(img, size=(resX ,resY))
         self.originalImageLabel = ctk.CTkLabel(self, image=originalImage, height=10, width=10)
-        self.originalImageLabel.grid(row=0, column=1,
-                                     padx = 0, 
-                                     pady = 0, ipadx = 2/self.winfo_height(),
+        self.originalImageLabel.grid(row=0, rowspan = 1,
+                                     column=1, columnspan = 2,
                                      sticky='n')
         
     def renderImage(self):
+
         dt.RetinaNet(filePath)
 
-        sleep(5)
+        sleep(10)
+        
         newImg = Image.open(newFilePath)    
         newImg = ctk.CTkImage(newImg, size=(resX ,resY))
         self.newImageLabel = ctk.CTkLabel(self, image=newImg, 
-                                               height= 10, width= 10)
-        self.newImageLabel.grid(row=0, column=1,
-                                     padx = 0, 
-                                     pady = 2/self.winfo_height(), ipadx = 0,
-                                     sticky='n')
+                                          height= 10, width= 10)
 
+        self.newImageLabel.grid(row=0, rowspan = 1,
+                                column=1, columnspan = 2,
+                                padx = 0, 
+                                pady = resY + 20,
+                                sticky='n')
+
+def download_file(url, destination):
+    response = get(url)
+    with open(destination, 'wb') as file:
+        file.write(response.content)
+
+def downloadModels():
+    '''Downloads and Checks if models exist.'''
+    
+    count = 0
+    for path in os.listdir('models/'):
+        if os.path.isfile(os.path.join('models/', path)):
+            count += 1
+
+    if count != 4:
+        for link, destination in zip(links, destinations):
+            download_file(link, destination)
+        
 def about_usOpen():
     about_us.mainloop()
 
@@ -328,6 +403,10 @@ def mainOpen():
     home.destroy()
     main.mainloop()
 
+def loadingAtStart():
+    loading.mainloop()
+    sleep(10)
+    loading.destroy()
 
 if __name__ == "__main__":
     '''
@@ -337,9 +416,14 @@ if __name__ == "__main__":
     '''
     main = Main()
     home = Home()
+    loading = Loading()
     settings = Settings()
     about_us= AboutUs()
+    
+    downloadModels()
+    
     home.mainloop()
+    
 
 
 
