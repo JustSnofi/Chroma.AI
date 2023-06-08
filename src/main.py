@@ -199,16 +199,7 @@ class Main(ctk.CTk):
         self.generateResultsButton.grid(row=0, column=0, columnspan=3, 
                                         padx=50, 
                                         pady=480, ipady = 15,
-                                        sticky="nw")
-
- 
-        # Generate Button
-        self.generateResultsButton = ctk.CTkButton(self,
-                                         text="Generate Results", font=font,)
-        self.generateResultsButton.grid(row=0, column=0, columnspan=3, 
-                                        padx=50, 
-                                        pady=480, ipady = 15,
-                                        sticky="nw")    
+                                        sticky="nw") 
 
         # Appearance
         self.appearanceLabel = ctk.CTkLabel(self,
@@ -292,11 +283,10 @@ class Main(ctk.CTk):
         ctk.set_default_color_theme(themeVar)
 
     def selectFile(self):
-        global resX, resY, newFilePath, originalImage, filePath
+        global resX, resY, newFilePath, originalImage, filePath, newFilePath
         filePath = filedialog.askopenfilename(filetypes=[("PNG files", "*.png"), ('JPEG files', "*.jpg"), ('JPEG files', "*.jpeg")])
         newFilePath = 'img\testingimagenew.png'
         img = Image.open(filePath)
-        
         if filePath:
             if 1700 > img.size[0]:
                 resX = img.size[0]
@@ -315,6 +305,9 @@ class Main(ctk.CTk):
                                      sticky='n')
         
     def renderImage(self):
+        dt.RetinaNet(filePath)
+
+        sleep(5)
         newImg = Image.open(newFilePath)    
         newImg = ctk.CTkImage(newImg, size=(resX ,resY))
         self.newImageLabel = ctk.CTkLabel(self, image=newImg, 
