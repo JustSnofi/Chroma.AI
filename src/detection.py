@@ -3,14 +3,16 @@ import os
 import cv2
 import PIL
 import json
+import shutil
 
 execution_path = os.getcwd()
 detector = ObjectDetection()
-# extractedPath = r'img\output\output-extracted'
-extractedPath = r'img\testing\output-extracted'
-outputPath = r'img\testing\output-extracted'
+extractedPath = r'output\output-extracted'
+# extractedPath = r'img\testing\output-extracted' - for testing
+outputPath = r'output'
+newFilePath = r'output\output.jpg'
 
-def RetinaNet(img_path, output_image_path) -> None:
+def RetinaNet(img_path) -> None:
     '''
     
     Using RetinaNet ImageAI model
@@ -23,15 +25,17 @@ def RetinaNet(img_path, output_image_path) -> None:
     
     global detection
     global detectionsSplit
+    
+    # Making sure the Paths exist so it does not cause any errors
+    os.makedirs(extractedPath)
+    shutil.rmtree(extractedPath)
 
-    Local.deleteFiles()
-    Local.deleteFolder()
     detector.setModelTypeAsRetinaNet()
     detector.setModelPath(r"models\RetinaNet.pth")
     detector.loadModel()
     input_image = os.path.join(execution_path , img_path)
-    detectionsSplit = detector.detectObjectsFromImage(input_image=input_image, output_image_path=output_image_path, extract_detected_objects = True)
-    detection = detector.detectObjectsFromImage(input_image=input_image, output_image_path=output_image_path, extract_detected_objects = False)
+    detection = detector.detectObjectsFromImage(input_image=input_image, output_image_path=newFilePath, extract_detected_objects = False)
+    detectionsSplit = detector.detectObjectsFromImage(input_image=input_image, output_image_path=newFilePath, extract_detected_objects = True)
     Local.enumExtracted()
 
 def YoloV3(img_path, output_image_path):
@@ -107,12 +111,14 @@ class Local():
             num += 1
             data[num] = None
             objInfo = [eachObject['name'] , eachObject['percentage_probability']]
-
-        for filename in os.listdir(extractedPath):
-            filePath = os.path.join(extractedPath, filename)
-            objInfo.append(filePath)    
-            for num in data:
-                data[num] = objInfo   
+        try:
+            for filename in os.listdir(extractedPath):
+                filePath = os.path.join(extractedPath, filename)
+                objInfo.append(filePath)    
+                for num in data:
+                    data[num] = objInfo   
+        except:
+            pass
 
         # Write data dictionary to JSON file
         with open(jsonPath, 'w') as f:
@@ -128,11 +134,13 @@ class Local():
         !!!Always use this in each model function, if not it will cause erros!!!
         
         '''
+
         for filename in os.listdir(outputPath):
             deleteFile = os.path.join(outputPath, filename)
             if os.path.isfile(deleteFile):
                 os.remove(deleteFile)
-    
+
+
     def deleteFolder():
         '''
         
@@ -143,9 +151,7 @@ class Local():
         !!!Always use this together with Local.deleteFiles() if not it will cause errors!!!
 
         '''
-        os.removedirs(outputPath)
-
-
+        os.removedirs(extractedPath) 
 
 
 if __name__ == "__main__":
@@ -156,6 +162,5 @@ if __name__ == "__main__":
     '''
 
     imgPath = r'img\testing\haifa.png'
-    newFilePath = r'img\testing\output.jpg'
     
-    RetinaNet(imgPath, newFilePath)
+    RetinaNet(imgPath)
