@@ -27,8 +27,7 @@ def RetinaNet(img_path) -> None:
     global detectionsSplit
     
     # Making sure the Paths exist so it does not cause any errors
-    os.makedirs(extractedPath)
-    shutil.rmtree(extractedPath)
+    Local.handleFolder()
 
     detector.setModelTypeAsRetinaNet()
     detector.setModelPath(r"models\RetinaNet.pth")
@@ -125,6 +124,13 @@ class Local():
             json.dump(data, f)
 
         print(data)
+
+    def handleFolder():
+        if os.path.exists(extractedPath):
+            shutil.rmtree(extractedPath)
+        else:
+            os.mkdir('output')
+
 
     def deleteFiles():
         '''
