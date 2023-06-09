@@ -2,8 +2,15 @@
 models/*.pt
 models/*.pth
 
+# git ignoring tests
+img/testing/output.jpg
+img/testing/output-extracted
+
 # git ignoring outputs
 img/output
+output/output-extracted
+output/*.jpg
+output/*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
