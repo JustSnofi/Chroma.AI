@@ -1,3 +1,10 @@
+'''
+
+Chroma.Ai 
+v0.2.3
+
+'''
+
 import customtkinter as ctk
 import tkinter as tk
 from tkinter import filedialog
@@ -8,6 +15,9 @@ import detection as dt
 from time import sleep
 from requests import get
 import threading
+import json
+import userdata
+
 
 # Supported modes : Light, Dark, System
 ctk.set_appearance_mode('dark')
@@ -252,12 +262,12 @@ class Main(ctk.CTk):
 
  
         # Blindness Radio Buttons
-        self.blindnessVar = tk.StringVar(value="Normal")
+        self.blindnessVar = tk.StringVar(value="None")
  
         self.deuRadioButton = ctk.CTkRadioButton(self,
                                   text="Deuteranopia", font=font,
-                                  variable=self.blindnessVar,
-                                            value="He is")
+                                  variable=self.blindnessVar, value='deu', 
+                                  command=self.blindnessSelect)
         self.deuRadioButton.grid(row=0, column=0, columnspan=3, 
                                 padx=50, 
                                 pady=160,
@@ -265,20 +275,28 @@ class Main(ctk.CTk):
  
         self.triRadioButton = ctk.CTkRadioButton(self,
                                       text="Tritanopia", font=font,
-                                      variable=self.blindnessVar,
-                                      value="She is")
+                                      variable=self.blindnessVar, value='tri',
+                                      command=self.blindnessSelect)
         self.triRadioButton.grid(row=0, column=0, columnspan=3, 
                                 padx=50, 
                                 pady=200,
                                 sticky="nw")
          
-        self.monRadioButton = ctk.CTkRadioButton(self,
-                                    text="Monochromacy", font=font,
-                                    variable=self.blindnessVar,
-                                            value="They are")
-        self.monRadioButton.grid(row=0, column=0, columnspan=3, 
+        self.proRadioButton = ctk.CTkRadioButton(self,
+                                    text="Protanopia", font=font,
+                                    variable=self.blindnessVar, value='pro',
+                                    command=self.blindnessSelect)
+        self.proRadioButton.grid(row=0, column=0, columnspan=3, 
                                 padx=50, 
                                 pady=240,
+                                sticky="nw")
+        self.noneRadioButton = ctk.CTkRadioButton(self,
+                                    text="None", font=font,
+                                    variable=self.blindnessVar, value='None',
+                                    command=self.blindnessSelect)
+        self.noneRadioButton.grid(row=0, column=0, columnspan=3, 
+                                padx=50, 
+                                pady=280,
                                 sticky="nw")
  
   
@@ -361,7 +379,18 @@ class Main(ctk.CTk):
                                         padx=50,
                                         pady=860,
                                         sticky="nw")
- 
+        
+    def blindnessSelect(self):
+        value = self.blindnessVar.get()    
+        if value == 'deu':
+            userdata.saveBlindness('deuteranopia')
+        elif value == 'tri':
+            userdata.saveBlindness('tritanopia')
+        elif value == 'pro':
+            userdata.saveBlindness('protanopia')
+        elif value == 'None':
+            userdata.saveBlindness('None')
+
     def modelSelect(self, modelVar):
         if modelVar == 'RetinaNet':
             return 'models\retinanet_resnet50_fpn_coco-eeacb38b.pth'
@@ -396,6 +425,7 @@ class Main(ctk.CTk):
                                      column=1, columnspan = 2,
                                      sticky='n')
         
+        
     def renderImage(self):
         dt.RetinaNet(filePath)
         
@@ -409,6 +439,8 @@ class Main(ctk.CTk):
                                 padx = 0, 
                                 pady = resY + 20,
                                 sticky='n')
+        
+        
 
 def download_file(url, destination):
     response = get(url)
