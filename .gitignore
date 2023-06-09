@@ -7,10 +7,7 @@ img/testing/output.jpg
 img/testing/output-extracted
 
 # git ignoring outputs
-img/output
-output/output-extracted
-output/*.jpg
-output/*.json
+output/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

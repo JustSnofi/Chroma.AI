@@ -32,11 +32,11 @@ appName = 'Chroma.AI'
 
 appLogoPath = r'img\app\icon.ico'
 
+newFilePath = r'output\output.jpg'
+
 modelsCount = 0
 
-appWidth, appHeight = 900, 880
-
-newFilePath = r'img\output\output.jpg'
+appWidth, appHeight = 1000, 1000
 
 class Loading(ctk.CTk):
     def __init__(self, *args, **kwargs):
@@ -397,7 +397,7 @@ class Main(ctk.CTk):
                                      sticky='n')
         
     def renderImage(self):
-        dt.RetinaNet(filePath, newFilePath)
+        dt.RetinaNet(filePath)
         
         newImg = Image.open(newFilePath)    
         newImg = ctk.CTkImage(newImg, size=(resX ,resY))
