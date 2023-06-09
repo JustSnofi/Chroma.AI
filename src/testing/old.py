@@ -10,8 +10,9 @@ detector = ObjectDetection()
 detector.setModelTypeAsRetinaNet()
 detector.setModelPath(r"data\model.pth")
 detector.loadModel()
-img_path = gui.get_file_path()
-data_set_path = r'data\color_names.csv'
+img_path = gui.selectFile()
+#data_set_path = gui.modelSelect()
+data_set_path = r'models\retinanet_resnet50_fpn_coco-eeacb38b.pth'
 data_set = pd.read_csv(data_set_path)
 img = cv2.imread(img_path, 1)
 output_image_path=os.path.join(execution_path , "imagenew.jpg")
