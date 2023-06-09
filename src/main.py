@@ -17,6 +17,7 @@ from requests import get
 import threading
 import json
 import userdata
+import imgColoring
 
 
 # Supported modes : Light, Dark, System
@@ -35,8 +36,6 @@ destinations = [
     'models/YoloV3.pt',
     'models/TinyYoloV3.pt'
 ]
-
-objValues = ['None']
 
 appName = 'Chroma.AI'
 
@@ -231,6 +230,9 @@ class Main(ctk.CTk):
         self.appearanceVar = tk.StringVar(self)
         self.themeVar = tk.StringVar(self)
         self.modelVar = tk.StringVar(self)
+        self.objValues = ['None']
+        self.objVar = tk.StringVar()
+        self.objVar.set(self.objValues[0])
         self.minsize(840, 300)
         font = ctk.CTkFont(family='arial', size=18)
         fontTitle = ctk.CTkFont(family='arial', size=22, slant='roman')
@@ -266,7 +268,7 @@ class Main(ctk.CTk):
  
         self.deuRadioButton = ctk.CTkRadioButton(self,
                                   text="Deuteranopia", font=font,
-                                  variable=self.blindnessVar, value='deu', 
+                                  variable=self.blindnessVar, value='deuteranopia', 
                                   command=self.blindnessSelect)
         self.deuRadioButton.grid(row=0, column=0, columnspan=3, 
                                 padx=50, 
@@ -275,7 +277,7 @@ class Main(ctk.CTk):
  
         self.triRadioButton = ctk.CTkRadioButton(self,
                                       text="Tritanopia", font=font,
-                                      variable=self.blindnessVar, value='tri',
+                                      variable=self.blindnessVar, value='tritanopia',
                                       command=self.blindnessSelect)
         self.triRadioButton.grid(row=0, column=0, columnspan=3, 
                                 padx=50, 
@@ -284,7 +286,7 @@ class Main(ctk.CTk):
          
         self.proRadioButton = ctk.CTkRadioButton(self,
                                     text="Protanopia", font=font,
-                                    variable=self.blindnessVar, value='pro',
+                                    variable=self.blindnessVar, value='protanopia',
                                     command=self.blindnessSelect)
         self.proRadioButton.grid(row=0, column=0, columnspan=3, 
                                 padx=50, 
@@ -309,8 +311,7 @@ class Main(ctk.CTk):
                                 sticky="nw")
  
         # Obj drop box
-        self.objOptionMenu = ctk.CTkOptionMenu(self,
-                                        values=objValues, font=font,)
+        self.objOptionMenu = ctk.CTkOptionMenu(self, variable=self.objVar, font=font, values=self.objValues)
         self.objOptionMenu.grid(row=0, column=0, columnspan=3, 
                                         padx=50,
                                         pady=360,
@@ -352,10 +353,10 @@ class Main(ctk.CTk):
                                 pady=660,
                                 sticky="nw")
         
-        self.themeOptionMenu = ctk.CTkOptionMenu(self,
-                                        values=["green", "dark-blue", "blue"], 
-                                        variable = self.themeVar, font=font,
-                                        command=self.selectTheme)
+        themeValues=["green", "dark-blue", "blue"]
+        self.themeOptionMenu = ctk.CTkOptionMenu(self, values=themeValues,  
+                                                variable = self.themeVar, font=font,
+                                                command=self.selectTheme)
 
         self.themeOptionMenu.grid(row=0, column=0, columnspan=3, 
                                         padx=50,
@@ -382,11 +383,11 @@ class Main(ctk.CTk):
         
     def blindnessSelect(self):
         value = self.blindnessVar.get()    
-        if value == 'deu':
+        if value == 'deuteranopia':
             userdata.saveBlindness('deuteranopia')
-        elif value == 'tri':
+        elif value == 'tritanopia':
             userdata.saveBlindness('tritanopia')
-        elif value == 'pro':
+        elif value == 'protanopia':
             userdata.saveBlindness('protanopia')
         elif value == 'None':
             userdata.saveBlindness('None')
@@ -427,6 +428,7 @@ class Main(ctk.CTk):
         
         
     def renderImage(self):
+        jsonPath = r'output\obj.json'
         dt.RetinaNet(filePath)
         
         newImg = Image.open(newFilePath)    
@@ -439,6 +441,23 @@ class Main(ctk.CTk):
                                 padx = 0, 
                                 pady = resY + 20,
                                 sticky='n')
+        
+        imgColoring.manipulate(self.blindnessVar.get())
+
+        # with open(jsonPath, 'r') as f:
+        #     data = json.load(f)
+        
+        # for key, value in data.items():
+        #     items = f'{key} | {value}'
+        
+        # self.objValues.append(list(items))
+        # menu = self.objOptionMenu["menu"]
+        # menu.delete(0, "end")
+        
+        # for string in self.objValues:
+        #     menu.add_command(label=string, 
+        #                      command=lambda value=string: self.objVar.set(value))  
+        
         
         
 

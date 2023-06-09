@@ -126,9 +126,9 @@ class Local():
         print(data)
 
     def handleFolder():
-        if os.path.exists(extractedPath):
-            shutil.rmtree(extractedPath)
-        else:
+        if os.path.exists('output'):
+            shutil.rmtree('output')
+        if os.path.exists('output') == False:
             os.mkdir('output')
 
 
