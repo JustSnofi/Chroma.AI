@@ -1,3 +1,9 @@
+'''
+
+Image coloring for colorblind using colorblind lib
+
+'''
+
 import numpy as np
 import cv2
 from colorblind import colorblind

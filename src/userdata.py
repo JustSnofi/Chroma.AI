@@ -1,3 +1,11 @@
+'''
+
+Loading and dumping user data
+
+Currently this works only with saveBlindness
+
+'''
+
 import json
 import os
 from os import path

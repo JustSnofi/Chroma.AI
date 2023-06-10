@@ -1,3 +1,17 @@
+'''
+
+Models from the lib imageai
+
+RetinaNet is the main model
+
+Other models will work in the future with Chroma.AI
+
+Models are located in "models\" folder and are downloaded automaticlly when starting main.py
+
+main.py will do an automatic check everytime it opens and see if the models exist.
+
+'''
+
 from imageai.Detection import ObjectDetection
 import os
 import cv2
@@ -27,18 +41,23 @@ def RetinaNet(img_path) -> None:
     global detection
     global detectionsSplit
     
-    # Making sure the Paths exist so it does not cause any errors
+    
     Local.handleFolder()
 
     detector.setModelTypeAsRetinaNet()
     detector.setModelPath(r"models\RetinaNet.pth")
     detector.loadModel()
     input_image = os.path.join(execution_path , img_path)
-    detection = detector.detectObjectsFromImage(input_image=input_image, output_image_path=newFilePath, extract_detected_objects = False)
-    detectionsSplit = detector.detectObjectsFromImage(input_image=input_image, output_image_path=newFilePath, extract_detected_objects = True)
+    detection = detector.detectObjectsFromImage(input_image=input_image, 
+                                                output_image_path=newFilePath, 
+                                                extract_detected_objects = False)
+    detectionsSplit = detector.detectObjectsFromImage(input_image=input_image, 
+                                                      output_image_path=newFilePath, 
+                                                      extract_detected_objects = True)
+    
     Local.enumExtracted()
 
-def YoloV3(img_path, output_image_path):
+def YoloV3(img_path):
     '''
     
     Using YoloV3 ImageAI model
@@ -52,7 +71,9 @@ def YoloV3(img_path, output_image_path):
     global detection
     global detectionsSplit
 
-    num = 0
+    
+    Local.handleFolder()
+
     detector.setModelTypeAsYOLOv3()
     detector.setModelPath(r"models\TinyYoloV3.pt")
     detector.loadModel()
@@ -60,8 +81,10 @@ def YoloV3(img_path, output_image_path):
     input_image = os.path.join(execution_path , img_path)
     detectionSplit = detector.detectObjectsFromImage(input_image=input_image, output_image_path=output_image_path, extract_detected_objects = True)
     detection = detector.detectObjectsFromImage(input_image=input_image, output_image_path=output_image_path)
+    
+    Local.enumExtracted
 
-def TinyYoloV3(img_path, output_image_path):
+def TinyYoloV3(img_path):
     '''
     
     Using TinyYoloV3 ImageAI model
@@ -75,7 +98,9 @@ def TinyYoloV3(img_path, output_image_path):
     global detection
     global detectionsSplit
 
-    num = 0
+    
+    Local.handleFolder
+    
     detector.setModelTypeAsTinyYOLOv3()
     detector.setModelPath(r"models\YoloV3.pt")
     detector.loadModel()
@@ -83,6 +108,7 @@ def TinyYoloV3(img_path, output_image_path):
     input_image = os.path.join(execution_path , img_path)
     detections = detector.detectObjectsFromImage(input_image=input_image, output_image_path=output_image_path)
     
+    Local.enumExtracted
 
 
 class Local():
@@ -104,13 +130,25 @@ class Local():
 
         num = 0
         jsonPath = r'output\obj.json'
-        data = {}
-        files = []
 
-        print(os.listdir)
-        for filename in os.listdir(extractedPath):
-            filePath = os.path.join(manipulatedPath, filename)
-            files.append(filePath)
+        with open(r'.userdata\data.json', 'r') as f:
+            userdata = json.load(f)
+
+        if userdata['blindness_type'] == 'None':
+            data = {}
+            files = []
+            print(os.listdir)
+            for filenameN in os.listdir(extractedPath):
+                filePathN = os.path.join(extractedPath, filenameN)
+                files.append(filePathN)
+        else:
+            data = {}
+            files = []
+
+            print(os.listdir)
+            for filename in os.listdir(extractedPath):
+                filePath = os.path.join(manipulatedPath, filename)
+                files.append(filePath)
         
 
         for eachObject in detection:
@@ -125,6 +163,11 @@ class Local():
         print(data)
 
     def handleFolder():
+        '''
+        
+        Checking if files exist
+        
+        '''
         if os.path.exists('output'):
             shutil.rmtree('output')
         if os.path.exists('output') == False:
@@ -166,6 +209,8 @@ if __name__ == "__main__":
     
     '''
 
-    imgPath = r'img\testing\haifa.png'
+    imgPath = r'img\testing\cars.png'
     
-    RetinaNet(imgPath)
+    # RetinaNet(imgPath)
+    YoloV3(imgPath)
+    # TinyYoloV3(imgPath)
