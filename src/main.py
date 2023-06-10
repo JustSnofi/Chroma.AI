@@ -45,7 +45,7 @@ newFilePath = r'output\output.jpg'
 
 modelsCount = 0
 
-appWidth, appHeight = 1000, 1000
+appWidth, appHeight = 700, 680
 
 class Loading(ctk.CTk):
     def __init__(self, *args, **kwargs):
@@ -184,6 +184,8 @@ class Settings(ctk.CTk):
         # self.minsize(700, 680)
         font = ctk.CTkFont(family='arial', size=20)
         fontTitle = ctk.CTkFont(family='arial', size=65, slant='roman')
+        self.appearanceVar = tk.StringVar(self)
+        self.themeVar = tk.StringVar(self)
 
         # ChromaAi Title
         self.appearanceLabel = ctk.CTkLabel(self,
@@ -193,6 +195,50 @@ class Settings(ctk.CTk):
                                         padx=5,
                                         pady=0, ipadx = 200, ipady = 35,
                                         sticky="nw")
+        
+        # Appearance
+        self.appearanceLabel = ctk.CTkLabel(self,
+                                    text="Appearance", font=font)
+        
+        self.appearanceLabel.grid(row=0, column=0, columnspan = 1,
+                                padx=50, 
+                                pady=200,
+                                sticky="nw")
+        
+        self.appearanceOptionMenu = ctk.CTkOptionMenu(self,
+                                        values=["System", "Light", "Dark"],
+                                        variable = self.appearanceVar, font=font,
+                                        command=self.selectAppearance)
+
+        self.appearanceOptionMenu.grid(row=0, column=0, columnspan=3, 
+                                        padx=50,
+                                        pady=240,
+                                        sticky="nw")
+        
+        # Theme
+        self.themeLabel = ctk.CTkLabel(self,
+                                    text="Theme", font=font)
+        
+        self.themeLabel.grid(row=0, column=0, columnspan = 1,
+                                padx=50, 
+                                pady=280,
+                                sticky="nw")
+        
+        themeValues=["green", "dark-blue", "blue"]
+        self.themeOptionMenu = ctk.CTkOptionMenu(self, values=themeValues,  
+                                                variable = self.themeVar, font=font,
+                                                command=self.selectTheme)
+
+        self.themeOptionMenu.grid(row=0, column=0, columnspan=3, 
+                                        padx=50,
+                                        pady=320,
+                                        sticky="nw")
+        
+    def selectAppearance(self, appearanceVar):
+        ctk.set_appearance_mode(appearanceVar)
+    def selectTheme(self, themeVar):
+        ctk.set_default_color_theme(themeVar)
+        
 
          
 #About us page
@@ -227,8 +273,8 @@ class Main(ctk.CTk):
         self.geometry(f"{appWidth}x{appHeight}")
         self.columnconfigure(1, weight=1)
         self.rowconfigure(1, weight=1)
-        self.appearanceVar = tk.StringVar(self)
-        self.themeVar = tk.StringVar(self)
+        # self.appearanceVar = tk.StringVar(self)
+        # self.themeVar = tk.StringVar(self)
         self.modelVar = tk.StringVar(self)
         self.objValues = ['None']
         self.objVar = tk.StringVar()
@@ -304,6 +350,7 @@ class Main(ctk.CTk):
   
         # Occupation Label
         self.occupationLabel = ctk.CTkLabel(self,
+        
                                             text="Object Selection", font=font,)
         self.occupationLabel.grid(row=0, column=0, columnspan=3, 
                                 padx=50,
@@ -325,43 +372,43 @@ class Main(ctk.CTk):
                                         pady=480, ipady = 15,
                                         sticky="nw") 
 
-        # Appearance
-        self.appearanceLabel = ctk.CTkLabel(self,
-                                    text="Appearance", font=font)
+        # # Appearance
+        # self.appearanceLabel = ctk.CTkLabel(self,
+        #                             text="Appearance", font=font)
         
-        self.appearanceLabel.grid(row=0, column=0, columnspan = 1,
-                                padx=50, 
-                                pady=580,
-                                sticky="nw")
+        # self.appearanceLabel.grid(row=0, column=0, columnspan = 1,
+        #                         padx=50, 
+        #                         pady=580,
+        #                         sticky="nw")
         
-        self.appearanceOptionMenu = ctk.CTkOptionMenu(self,
-                                        values=["System", "Light", "Dark"],
-                                        variable = self.appearanceVar, font=font,
-                                        command=self.selectAppearance)
+        # self.appearanceOptionMenu = ctk.CTkOptionMenu(self,
+        #                                 values=["System", "Light", "Dark"],
+        #                                 variable = self.appearanceVar, font=font,
+        #                                 command=self.selectAppearance)
 
-        self.appearanceOptionMenu.grid(row=0, column=0, columnspan=3, 
-                                        padx=50,
-                                        pady=620,
-                                        sticky="nw")
+        # self.appearanceOptionMenu.grid(row=0, column=0, columnspan=3, 
+        #                                 padx=50,
+        #                                 pady=620,
+        #                                 sticky="nw")
         
-        # Theme
-        self.themeLabel = ctk.CTkLabel(self,
-                                    text="Theme", font=font)
+        # # Theme
+        # self.themeLabel = ctk.CTkLabel(self,
+        #                             text="Theme", font=font)
         
-        self.themeLabel.grid(row=0, column=0, columnspan = 1,
-                                padx=50, 
-                                pady=660,
-                                sticky="nw")
+        # self.themeLabel.grid(row=0, column=0, columnspan = 1,
+        #                         padx=50, 
+        #                         pady=660,
+        #                         sticky="nw")
         
-        themeValues=["green", "dark-blue", "blue"]
-        self.themeOptionMenu = ctk.CTkOptionMenu(self, values=themeValues,  
-                                                variable = self.themeVar, font=font,
-                                                command=self.selectTheme)
+        # themeValues=["green", "dark-blue", "blue"]
+        # self.themeOptionMenu = ctk.CTkOptionMenu(self, values=themeValues,  
+        #                                         variable = self.themeVar, font=font,
+        #                                         command=self.selectTheme)
 
-        self.themeOptionMenu.grid(row=0, column=0, columnspan=3, 
-                                        padx=50,
-                                        pady=700,
-                                        sticky="nw")
+        # self.themeOptionMenu.grid(row=0, column=0, columnspan=3, 
+        #                                 padx=50,
+        #                                 pady=700,
+        #                                 sticky="nw")
         
         # Model Select and install https://imageai.readthedocs.io/en/latest/detection/ https://github.com/OlafenwaMoses/ImageAI/releases
         
@@ -400,11 +447,11 @@ class Main(ctk.CTk):
         if modelVar == 'TinyYOLOv3':
             return 'models\tiny-yolov3.pt'
     
-    def selectAppearance(self, appearanceVar):
-        ctk.set_appearance_mode(appearanceVar)
+    # def selectAppearance(self, appearanceVar):
+    #     ctk.set_appearance_mode(appearanceVar)
 
-    def selectTheme(self, themeVar):
-        ctk.set_default_color_theme(themeVar)
+    # def selectTheme(self, themeVar):
+    #     ctk.set_default_color_theme(themeVar)
 
     def selectFile(self):
         global resX, resY, originalImage, filePath
