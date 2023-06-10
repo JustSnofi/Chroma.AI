@@ -104,20 +104,18 @@ class Local():
         num = 0
         jsonPath = r'output\obj.json'
         data = {}
+        files = []
 
+        print(os.listdir)
+        for filename in os.listdir(extractedPath):
+            filePath = os.path.join(extractedPath, filename)
+            files.append(filePath)
+        
 
         for eachObject in detection:
             num += 1
-            data[num] = None
-            objInfo = [eachObject['name'] , eachObject['percentage_probability']]
-        try:
-            for filename in os.listdir(extractedPath):
-                filePath = os.path.join(extractedPath, filename)
-                objInfo.append(filePath)    
-                for num in data:
-                    data[num] = objInfo   
-        except:
-            pass
+            objInfo = [eachObject['name'] , eachObject['percentage_probability'], files[num - 1]]
+            data[num] = objInfo   
 
         # Write data dictionary to JSON file
         with open(jsonPath, 'w') as f:

@@ -156,7 +156,7 @@ class Home(ctk.CTk):
         
         # settings Button
         self.settingsButton = ctk.CTkButton(self,
-                                        text="Settings", font=font,command=setting_open)
+                                        text="Settings", font=font,command=settingsOpen)
         self.settingsButton.grid(row=0, column=0, columnspan=3, 
                                         padx=250, 
                                         pady=300, ipadx = 40, ipady = 30,
@@ -200,7 +200,7 @@ class Settings(ctk.CTk):
         self.appearanceLabel = ctk.CTkLabel(self,
                                     text="Appearance", font=font)
         
-        self.appearanceLabel.grid(row=0, column=0, columnspan = 1,
+        self.appearanceLabel.grid(row=0, column=1, columnspan = 1,
                                 padx=50, 
                                 pady=200,
                                 sticky="nw")
@@ -210,7 +210,7 @@ class Settings(ctk.CTk):
                                         variable = self.appearanceVar, font=font,
                                         command=self.selectAppearance)
 
-        self.appearanceOptionMenu.grid(row=0, column=0, columnspan=3, 
+        self.appearanceOptionMenu.grid(row=0, column=1, columnspan=3, 
                                         padx=50,
                                         pady=240,
                                         sticky="nw")
@@ -219,7 +219,7 @@ class Settings(ctk.CTk):
         self.themeLabel = ctk.CTkLabel(self,
                                     text="Theme", font=font)
         
-        self.themeLabel.grid(row=0, column=0, columnspan = 1,
+        self.themeLabel.grid(row=0, column=1, columnspan = 1,
                                 padx=50, 
                                 pady=280,
                                 sticky="nw")
@@ -229,10 +229,19 @@ class Settings(ctk.CTk):
                                                 variable = self.themeVar, font=font,
                                                 command=self.selectTheme)
 
-        self.themeOptionMenu.grid(row=0, column=0, columnspan=3, 
+        self.themeOptionMenu.grid(row=0, column=1, columnspan=3, 
                                         padx=50,
                                         pady=320,
                                         sticky="nw")
+        
+        self.goToMainButton = ctk.CTkButton(self, command=settingsOpen)
+
+        self.goToMainButton.grid(row=0, 
+                                column=1, columnspan=3, 
+                                padx=50,
+                                pady=400,
+                                sticky="nw")
+        
         
     def selectAppearance(self, appearanceVar):
         ctk.set_appearance_mode(appearanceVar)
@@ -347,77 +356,37 @@ class Main(ctk.CTk):
                                 pady=280,
                                 sticky="nw")
  
-  
-        # Occupation Label
-        self.occupationLabel = ctk.CTkLabel(self,
+        # Generate Button
+        self.generateResultsButton = ctk.CTkButton(self,
+                                         text="Generate Results", font=font, command=self.renderImage)
+        self.generateResultsButton.grid(row=0, column=0, columnspan=3, 
+                                        padx=50, 
+                                        pady=340, ipady = 15,
+                                        sticky="nw") 
         
-                                            text="Object Selection", font=font,)
-        self.occupationLabel.grid(row=0, column=0, columnspan=3, 
+        # obj Label
+        self.objLabel = ctk.CTkLabel(self,text="Object Selection", 
+                                    font=font,)
+        self.objLabel.grid(row=0, column=0, columnspan=3, 
                                 padx=50,
-                                pady=320,
+                                pady=480,
                                 sticky="nw")
  
         # Obj drop box
         self.objOptionMenu = ctk.CTkOptionMenu(self, variable=self.objVar, font=font, values=self.objValues)
         self.objOptionMenu.grid(row=0, column=0, columnspan=3, 
                                         padx=50,
-                                        pady=360,
+                                        pady=520,
                                         sticky="nw")
- 
-        # Generate Button
-        self.generateResultsButton = ctk.CTkButton(self,
-                                         text="Generate Results", font=font, command=self.renderImage)
-        self.generateResultsButton.grid(row=0, column=0, columnspan=3, 
-                                        padx=50, 
-                                        pady=480, ipady = 15,
-                                        sticky="nw") 
-
-        # # Appearance
-        # self.appearanceLabel = ctk.CTkLabel(self,
-        #                             text="Appearance", font=font)
-        
-        # self.appearanceLabel.grid(row=0, column=0, columnspan = 1,
-        #                         padx=50, 
-        #                         pady=580,
-        #                         sticky="nw")
-        
-        # self.appearanceOptionMenu = ctk.CTkOptionMenu(self,
-        #                                 values=["System", "Light", "Dark"],
-        #                                 variable = self.appearanceVar, font=font,
-        #                                 command=self.selectAppearance)
-
-        # self.appearanceOptionMenu.grid(row=0, column=0, columnspan=3, 
-        #                                 padx=50,
-        #                                 pady=620,
-        #                                 sticky="nw")
-        
-        # # Theme
-        # self.themeLabel = ctk.CTkLabel(self,
-        #                             text="Theme", font=font)
-        
-        # self.themeLabel.grid(row=0, column=0, columnspan = 1,
-        #                         padx=50, 
-        #                         pady=660,
-        #                         sticky="nw")
-        
-        # themeValues=["green", "dark-blue", "blue"]
-        # self.themeOptionMenu = ctk.CTkOptionMenu(self, values=themeValues,  
-        #                                         variable = self.themeVar, font=font,
-        #                                         command=self.selectTheme)
-
-        # self.themeOptionMenu.grid(row=0, column=0, columnspan=3, 
-        #                                 padx=50,
-        #                                 pady=700,
-        #                                 sticky="nw")
         
         # Model Select and install https://imageai.readthedocs.io/en/latest/detection/ https://github.com/OlafenwaMoses/ImageAI/releases
         
-        self.themeLabel = ctk.CTkLabel(self,
+        self.modelLabel = ctk.CTkLabel(self,
                                     text="Model Settings", font=font)
         
-        self.themeLabel.grid(row=0, column=0, columnspan = 1,
+        self.modelLabel.grid(row=0, column=0, columnspan = 1,
                             padx=50, 
-                            pady=780,
+                            pady=600,
                             sticky="nw")
         
         self.modelOptionMenu = ctk.CTkOptionMenu(self,
@@ -425,8 +394,15 @@ class Main(ctk.CTk):
         
         self.modelOptionMenu.grid(row=0, column=0, columnspan=3, 
                                         padx=50,
-                                        pady=860,
+                                        pady=640,
                                         sticky="nw")
+        
+        self.goToSettingsButton = ctk.CTkButton(self, text='Settings', command=settingsOpen)
+        
+        self.goToSettingsButton.grid(row=0, column=0, columnspan=3, 
+                                    padx=50,
+                                    pady=700,
+                                    sticky="nw")
         
     def blindnessSelect(self):
         value = self.blindnessVar.get()    
@@ -468,8 +444,9 @@ class Main(ctk.CTk):
                 resY = 470
             
         originalImage = ctk.CTkImage(img, size=(resX ,resY))
-        self.originalImageLabel = ctk.CTkLabel(self, image=originalImage, height=10, width=10)
-        self.originalImageLabel.grid(row=0, rowspan = 1,
+        self.originalImageButton = ctk.CTkLabel(self, image=originalImage, height=10, width=10)
+        
+        self.originalImageButton.grid(row=0, rowspan = 1,
                                      column=1, columnspan = 2,
                                      sticky='n')
         
@@ -522,12 +499,20 @@ def RetinaNet():
 def about_usOpen():
     about_us.mainloop()
 
-def setting_open():
+def settingsOpen():
     home.destroy()
+    try:
+        main.destroy()
+    except:
+        pass
     settings.mainloop()
 
 def mainOpen():
     home.destroy()
+    try:
+        settings.destroy()
+    except:
+        pass
     main.mainloop()
 
 def homeOpen():
