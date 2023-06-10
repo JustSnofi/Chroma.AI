@@ -12,13 +12,13 @@ from PIL import ImageTk, Image
 import numpy as np
 import os
 import detection as dt
-from time import sleep
 from requests import get
 import threading
 import json
 import userdata
 import imgColoring
 import cv2
+import webbrowser
 
 
 # Supported modes : Light, Dark, System
@@ -46,7 +46,9 @@ newFilePath = r'output\output.jpg'
 
 modelsCount = 0
 
-appWidth, appHeight = 700, 680
+weURL = r'https://github.com/JustSnofi/Chroma.AI#readme'
+
+appWidth, appHeight = 780, 780
 
 class Loading(ctk.CTk):
     def __init__(self, *args, **kwargs):
@@ -98,7 +100,7 @@ class Loading(ctk.CTk):
                     modelsCount += 1
 
             if modelsCount == 4:
-                self.after(0, homeOpen)
+                self.after(0, loadingToHomeOpen)
             elif modelsCount != 4:
                 for link, destination in zip(links, destinations):
                     print('downloading')
@@ -106,7 +108,7 @@ class Loading(ctk.CTk):
                     modelsCount += 1
                     print('downloaded')
                     if modelsCount == 4:
-                        self.after(0, homeOpen)
+                        self.after(0, loadingToHomeOpen)
 
 
         thread1 = threading.Thread(target=downloadModels)
@@ -149,13 +151,13 @@ class Home(ctk.CTk):
 
         # Start Button
         self.startButton = ctk.CTkButton(self,
-                                         text="Start", font=font, command=mainOpen)
+                                         text="Start", font=font, command=homeToMainOpen)
         self.startButton.grid(row=0, column=0, columnspan=3, 
                                         padx=250, 
                                         pady=190, ipadx = 40, ipady = 30,
                                         sticky="nw")
         
-        # settings Button
+        # Settings Button
         self.settingsButton = ctk.CTkButton(self,
                                         text="Settings", font=font,command=settingsOpen)
         self.settingsButton.grid(row=0, column=0, columnspan=3, 
@@ -165,12 +167,16 @@ class Home(ctk.CTk):
 
         # About us Button
         self.weButton = ctk.CTkButton(self, 
-                                        text="About us", font=font, width=50, height=20)
+                                        text="About us", font=font, 
+                                        width=50, height=20,
+                                        command=self.openURL)
         self.weButton.grid(row=0, column=0, 
                                         padx=5, 
                                         pady=15,
                                         sticky="sw")
 
+    def openURL(self):
+        webbrowser.open(weURL,new=1)
 
 #Settings page
 class Settings(ctk.CTk):
@@ -187,92 +193,67 @@ class Settings(ctk.CTk):
         fontTitle = ctk.CTkFont(family='arial', size=65, slant='roman')
         self.appearanceVar = tk.StringVar(self)
         self.themeVar = tk.StringVar(self)
+        padx = 260
 
         # ChromaAi Title
-        self.appearanceLabel = ctk.CTkLabel(self,
+        self.settingsLabel = ctk.CTkLabel(self,
                                     text="Settings", font=fontTitle)
         
-        self.appearanceLabel.grid(row=0, column=0, 
-                                        padx=5,
-                                        pady=0, ipadx = 200, ipady = 35,
+        self.settingsLabel.grid(row=0, column=0, 
+                                        padx=220,
+                                        pady=35,
                                         sticky="nw")
         
         # Appearance
         self.appearanceLabel = ctk.CTkLabel(self,
-                                    text="Appearance", font=font)
+                                    text="Appearance \n Dark (Default)", font=font)
         
-        self.appearanceLabel.grid(row=0, column=1, columnspan = 1,
-                                padx=50, 
+        self.appearanceLabel.grid(row=0, column=0, columnspan = 1,
+                                padx=padx, 
                                 pady=200,
                                 sticky="nw")
         
         self.appearanceOptionMenu = ctk.CTkOptionMenu(self,
-                                        values=["System", "Light", "Dark"],
-                                        variable = self.appearanceVar, font=font,
-                                        command=self.selectAppearance)
+                                                    values=["System", "Light", "Dark"],
+                                                    variable = self.appearanceVar, font=font,
+                                                    command=self.selectAppearance)
 
-        self.appearanceOptionMenu.grid(row=0, column=1, columnspan=3, 
-                                        padx=50,
-                                        pady=240,
+        self.appearanceOptionMenu.grid(row=0, column=0, columnspan=3, 
+                                        padx=padx,
+                                        pady=280,
                                         sticky="nw")
         
         # Theme
         self.themeLabel = ctk.CTkLabel(self,
-                                    text="Theme", font=font)
+                                    text="Theme \n Green (Default)", font=font)
         
-        self.themeLabel.grid(row=0, column=1, columnspan = 1,
-                                padx=50, 
-                                pady=280,
-                                sticky="nw")
+        self.themeLabel.grid(row=0, column=0, columnspan = 1,
+                            padx=padx, 
+                            pady=380,
+                            sticky="nw")
         
         themeValues=["green", "dark-blue", "blue"]
         self.themeOptionMenu = ctk.CTkOptionMenu(self, values=themeValues,  
                                                 variable = self.themeVar, font=font,
                                                 command=self.selectTheme)
 
-        self.themeOptionMenu.grid(row=0, column=1, columnspan=3, 
-                                        padx=50,
-                                        pady=320,
-                                        sticky="nw")
-        
-        self.goToMainButton = ctk.CTkButton(self, command=settingsOpen)
-
-        self.goToMainButton.grid(row=0, 
-                                column=1, columnspan=3, 
-                                padx=50,
-                                pady=400,
+        self.themeOptionMenu.grid(row=0, column=0, columnspan=3, 
+                                padx=padx,
+                                pady=460,
                                 sticky="nw")
+        
+        # Will be added in the next versions
+        # self.fullscreenSwitch = ctk.CTkSwitch(self, variable=self.fullscreenVar, command=)
         
         
     def selectAppearance(self, appearanceVar):
         ctk.set_appearance_mode(appearanceVar)
     def selectTheme(self, themeVar):
         ctk.set_default_color_theme(themeVar)
+    def goToHomne(self):
+        self.after(1, self.destroy())
+        main.mainloop()
         
-
-         
-#About us page
-class AboutUs(ctk.CTk):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.title("ChromAi - About us")
-        self.iconbitmap(appLogoPath)
-        self.resizable(False,False)
-        self.geometry("400x400")
-        self.columnconfigure(1, weight=1)
-        self.rowconfigure(1, weight=1)
-        # self.minsize(700, 680)
-        font = ctk.CTkFont(family='arial', size=20)
-        fontTitle = ctk.CTkFont(family='arial', size=45, slant='roman')
-
-        # ChromaAi Title
-        self.appearanceLabel = ctk.CTkLabel(self,
-                                    text="About us", font=fontTitle)
-        
-        self.appearanceLabel.grid(row=0, column=0, 
-                                        padx=5,
-                                        pady=0, ipadx = 20, ipady = 20,
-                                        sticky="nw")
 
 # Main Window Class
 class Main(ctk.CTk):
@@ -381,7 +362,9 @@ class Main(ctk.CTk):
                                         pady=640,
                                         sticky="nw")
         
-        self.goToSettingsButton = ctk.CTkButton(self, text='Settings', command=settingsOpen)
+        self.goToSettingsButton = ctk.CTkButton(self, text='Settings', 
+                                                font=font, 
+                                                command=settingsOpen)
         
         self.goToSettingsButton.grid(row=0, column=0, columnspan=3, 
                                     padx=50,
@@ -462,7 +445,7 @@ class Main(ctk.CTk):
             data = json.load(j)
     
         self.objPaths = {}
-        self.objLsit = ['None']
+        self.objList = ['None']
         for key, value in data.items():
             self.objVar = ctk.StringVar(self)
 
@@ -473,17 +456,20 @@ class Main(ctk.CTk):
             objPath = objData[2]
             obj = f'{objId} | {objName}'
             self.objPaths[obj] = objPath
-            self.objLsit.append(obj)
+            self.objList.append(obj)
             
         # obj Label
-        self.objLabel = ctk.CTkLabel(self,text="Object Selection",)
+        self.objLabel = ctk.CTkLabel(self,text="Object Selection", 
+                                     font=ctk.CTkFont(family='arial', size=20))
         self.objLabel.grid(row=0, column=0, columnspan=3, 
                                 padx=50,
                                 pady=480,
                                 sticky="nw")
         
         # Obj drop box
-        self.objOptionMenu = ctk.CTkOptionMenu(self, values=self.objLsit, variable=self.objVar, command=self.chooseObj)
+        self.objOptionMenu = ctk.CTkOptionMenu(self, values=self.objList, 
+                                               font=ctk.CTkFont(family='arial', size=16),
+                                               variable=self.objVar, command=self.chooseObj)
         self.objOptionMenu.grid(row=0, column=0, columnspan=3, 
                                 padx=50,
                                 pady=520,
@@ -510,6 +496,13 @@ class Main(ctk.CTk):
 
 
 
+# Not used - maybe used in the future
+def RetinaNet():
+    thread2 = dt.RetinaNet(filePath)
+    thread2.start()
+    thread2.join()
+
+
 
 
 def download_file(url, destination):
@@ -517,30 +510,21 @@ def download_file(url, destination):
     with open(destination, 'wb') as file:
         file.write(response.content)
 
-def RetinaNet():
-    thread2 = dt.RetinaNet(filePath)
-    thread2.start()
-    thread2.join()
+
 
 def settingsOpen():
-    home.destroy()
-    try:
-        main.destroy()
-    except:
-        pass
     settings.mainloop()
 
-def mainOpen():
+def homeToMainOpen():
     home.destroy()
-    try:
-        settings.destroy()
-    except:
-        pass
     main.mainloop()
 
-def homeOpen():
+def loadingToHomeOpen():
     loading.destroy()
     home.mainloop()
+
+
+
 
 if __name__ == "__main__":
     '''
