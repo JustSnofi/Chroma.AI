@@ -1,3 +1,10 @@
+'''
+
+Chroma.Ai 
+v0.2.3
+
+'''
+
 import customtkinter as ctk
 import tkinter as tk
 from tkinter import filedialog
@@ -8,6 +15,11 @@ import detection as dt
 from time import sleep
 from requests import get
 import threading
+import json
+import userdata
+import imgColoring
+import cv2
+
 
 # Supported modes : Light, Dark, System
 ctk.set_appearance_mode('dark')
@@ -26,8 +38,6 @@ destinations = [
     'models/TinyYoloV3.pt'
 ]
 
-objValues = ['None']
-
 appName = 'Chroma.AI'
 
 appLogoPath = r'img\app\icon.ico'
@@ -36,7 +46,7 @@ newFilePath = r'output\output.jpg'
 
 modelsCount = 0
 
-appWidth, appHeight = 1000, 1000
+appWidth, appHeight = 700, 680
 
 class Loading(ctk.CTk):
     def __init__(self, *args, **kwargs):
@@ -147,7 +157,7 @@ class Home(ctk.CTk):
         
         # settings Button
         self.settingsButton = ctk.CTkButton(self,
-                                        text="Settings", font=font,command=setting_open)
+                                        text="Settings", font=font,command=settingsOpen)
         self.settingsButton.grid(row=0, column=0, columnspan=3, 
                                         padx=250, 
                                         pady=300, ipadx = 40, ipady = 30,
@@ -155,7 +165,7 @@ class Home(ctk.CTk):
 
         # About us Button
         self.weButton = ctk.CTkButton(self, 
-                                        text="About us", font=font, width=50, height=20,command=about_usOpen)
+                                        text="About us", font=font, width=50, height=20)
         self.weButton.grid(row=0, column=0, 
                                         padx=5, 
                                         pady=15,
@@ -175,6 +185,8 @@ class Settings(ctk.CTk):
         # self.minsize(700, 680)
         font = ctk.CTkFont(family='arial', size=20)
         fontTitle = ctk.CTkFont(family='arial', size=65, slant='roman')
+        self.appearanceVar = tk.StringVar(self)
+        self.themeVar = tk.StringVar(self)
 
         # ChromaAi Title
         self.appearanceLabel = ctk.CTkLabel(self,
@@ -184,6 +196,59 @@ class Settings(ctk.CTk):
                                         padx=5,
                                         pady=0, ipadx = 200, ipady = 35,
                                         sticky="nw")
+        
+        # Appearance
+        self.appearanceLabel = ctk.CTkLabel(self,
+                                    text="Appearance", font=font)
+        
+        self.appearanceLabel.grid(row=0, column=1, columnspan = 1,
+                                padx=50, 
+                                pady=200,
+                                sticky="nw")
+        
+        self.appearanceOptionMenu = ctk.CTkOptionMenu(self,
+                                        values=["System", "Light", "Dark"],
+                                        variable = self.appearanceVar, font=font,
+                                        command=self.selectAppearance)
+
+        self.appearanceOptionMenu.grid(row=0, column=1, columnspan=3, 
+                                        padx=50,
+                                        pady=240,
+                                        sticky="nw")
+        
+        # Theme
+        self.themeLabel = ctk.CTkLabel(self,
+                                    text="Theme", font=font)
+        
+        self.themeLabel.grid(row=0, column=1, columnspan = 1,
+                                padx=50, 
+                                pady=280,
+                                sticky="nw")
+        
+        themeValues=["green", "dark-blue", "blue"]
+        self.themeOptionMenu = ctk.CTkOptionMenu(self, values=themeValues,  
+                                                variable = self.themeVar, font=font,
+                                                command=self.selectTheme)
+
+        self.themeOptionMenu.grid(row=0, column=1, columnspan=3, 
+                                        padx=50,
+                                        pady=320,
+                                        sticky="nw")
+        
+        self.goToMainButton = ctk.CTkButton(self, command=settingsOpen)
+
+        self.goToMainButton.grid(row=0, 
+                                column=1, columnspan=3, 
+                                padx=50,
+                                pady=400,
+                                sticky="nw")
+        
+        
+    def selectAppearance(self, appearanceVar):
+        ctk.set_appearance_mode(appearanceVar)
+    def selectTheme(self, themeVar):
+        ctk.set_default_color_theme(themeVar)
+        
 
          
 #About us page
@@ -218,8 +283,8 @@ class Main(ctk.CTk):
         self.geometry(f"{appWidth}x{appHeight}")
         self.columnconfigure(1, weight=1)
         self.rowconfigure(1, weight=1)
-        self.appearanceVar = tk.StringVar(self)
-        self.themeVar = tk.StringVar(self)
+        # self.appearanceVar = tk.StringVar(self)
+        # self.themeVar = tk.StringVar(self)
         self.modelVar = tk.StringVar(self)
         self.minsize(840, 300)
         font = ctk.CTkFont(family='arial', size=18)
@@ -252,12 +317,12 @@ class Main(ctk.CTk):
 
  
         # Blindness Radio Buttons
-        self.blindnessVar = tk.StringVar(value="Normal")
+        self.blindnessVar = tk.StringVar(value="None")
  
         self.deuRadioButton = ctk.CTkRadioButton(self,
                                   text="Deuteranopia", font=font,
-                                  variable=self.blindnessVar,
-                                            value="He is")
+                                  variable=self.blindnessVar, value='deuteranopia', 
+                                  command=self.blindnessSelect)
         self.deuRadioButton.grid(row=0, column=0, columnspan=3, 
                                 padx=50, 
                                 pady=160,
@@ -265,93 +330,47 @@ class Main(ctk.CTk):
  
         self.triRadioButton = ctk.CTkRadioButton(self,
                                       text="Tritanopia", font=font,
-                                      variable=self.blindnessVar,
-                                      value="She is")
+                                      variable=self.blindnessVar, value='tritanopia',
+                                      command=self.blindnessSelect)
         self.triRadioButton.grid(row=0, column=0, columnspan=3, 
                                 padx=50, 
                                 pady=200,
                                 sticky="nw")
          
-        self.monRadioButton = ctk.CTkRadioButton(self,
-                                    text="Monochromacy", font=font,
-                                    variable=self.blindnessVar,
-                                            value="They are")
-        self.monRadioButton.grid(row=0, column=0, columnspan=3, 
+        self.proRadioButton = ctk.CTkRadioButton(self,
+                                    text="Protanopia", font=font,
+                                    variable=self.blindnessVar, value='protanopia',
+                                    command=self.blindnessSelect)
+        self.proRadioButton.grid(row=0, column=0, columnspan=3, 
                                 padx=50, 
                                 pady=240,
                                 sticky="nw")
- 
-  
-        # Occupation Label
-        self.occupationLabel = ctk.CTkLabel(self,
-                                            text="Object Selection", font=font,)
-        self.occupationLabel.grid(row=0, column=0, columnspan=3, 
-                                padx=50,
-                                pady=320,
+        self.noneRadioButton = ctk.CTkRadioButton(self,
+                                    text="None", font=font,
+                                    variable=self.blindnessVar, value='None',
+                                    command=self.blindnessSelect)
+        self.noneRadioButton.grid(row=0, column=0, columnspan=3, 
+                                padx=50, 
+                                pady=280,
                                 sticky="nw")
- 
-        # Obj drop box
-        self.objOptionMenu = ctk.CTkOptionMenu(self,
-                                        values=objValues, font=font,)
-        self.objOptionMenu.grid(row=0, column=0, columnspan=3, 
-                                        padx=50,
-                                        pady=360,
-                                        sticky="nw")
  
         # Generate Button
         self.generateResultsButton = ctk.CTkButton(self,
                                          text="Generate Results", font=font, command=self.renderImage)
         self.generateResultsButton.grid(row=0, column=0, columnspan=3, 
                                         padx=50, 
-                                        pady=480, ipady = 15,
+                                        pady=340, ipady = 15,
                                         sticky="nw") 
-
-        # Appearance
-        self.appearanceLabel = ctk.CTkLabel(self,
-                                    text="Appearance", font=font)
         
-        self.appearanceLabel.grid(row=0, column=0, columnspan = 1,
-                                padx=50, 
-                                pady=580,
-                                sticky="nw")
-        
-        self.appearanceOptionMenu = ctk.CTkOptionMenu(self,
-                                        values=["System", "Light", "Dark"],
-                                        variable = self.appearanceVar, font=font,
-                                        command=self.selectAppearance)
-
-        self.appearanceOptionMenu.grid(row=0, column=0, columnspan=3, 
-                                        padx=50,
-                                        pady=620,
-                                        sticky="nw")
-        
-        # Theme
-        self.themeLabel = ctk.CTkLabel(self,
-                                    text="Theme", font=font)
-        
-        self.themeLabel.grid(row=0, column=0, columnspan = 1,
-                                padx=50, 
-                                pady=660,
-                                sticky="nw")
-        
-        self.themeOptionMenu = ctk.CTkOptionMenu(self,
-                                        values=["green", "dark-blue", "blue"], 
-                                        variable = self.themeVar, font=font,
-                                        command=self.selectTheme)
-
-        self.themeOptionMenu.grid(row=0, column=0, columnspan=3, 
-                                        padx=50,
-                                        pady=700,
-                                        sticky="nw")
         
         # Model Select and install https://imageai.readthedocs.io/en/latest/detection/ https://github.com/OlafenwaMoses/ImageAI/releases
         
-        self.themeLabel = ctk.CTkLabel(self,
+        self.modelLabel = ctk.CTkLabel(self,
                                     text="Model Settings", font=font)
         
-        self.themeLabel.grid(row=0, column=0, columnspan = 1,
+        self.modelLabel.grid(row=0, column=0, columnspan = 1,
                             padx=50, 
-                            pady=780,
+                            pady=600,
                             sticky="nw")
         
         self.modelOptionMenu = ctk.CTkOptionMenu(self,
@@ -359,9 +378,27 @@ class Main(ctk.CTk):
         
         self.modelOptionMenu.grid(row=0, column=0, columnspan=3, 
                                         padx=50,
-                                        pady=860,
+                                        pady=640,
                                         sticky="nw")
- 
+        
+        self.goToSettingsButton = ctk.CTkButton(self, text='Settings', command=settingsOpen)
+        
+        self.goToSettingsButton.grid(row=0, column=0, columnspan=3, 
+                                    padx=50,
+                                    pady=700,
+                                    sticky="nw")
+        
+    def blindnessSelect(self):
+        value = self.blindnessVar.get()    
+        if value == 'deuteranopia':
+            userdata.saveBlindness('deuteranopia')
+        elif value == 'tritanopia':
+            userdata.saveBlindness('tritanopia')
+        elif value == 'protanopia':
+            userdata.saveBlindness('protanopia')
+        elif value == 'None':
+            userdata.saveBlindness('None')
+
     def modelSelect(self, modelVar):
         if modelVar == 'RetinaNet':
             return 'models\retinanet_resnet50_fpn_coco-eeacb38b.pth'
@@ -370,11 +407,12 @@ class Main(ctk.CTk):
         if modelVar == 'TinyYOLOv3':
             return 'models\tiny-yolov3.pt'
     
-    def selectAppearance(self, appearanceVar):
-        ctk.set_appearance_mode(appearanceVar)
+    # def selectAppearance(self, appearanceVar):
+    #     ctk.set_appearance_mode(appearanceVar)
 
-    def selectTheme(self, themeVar):
-        ctk.set_default_color_theme(themeVar)
+    # def selectTheme(self, themeVar):
+    #     ctk.set_default_color_theme(themeVar)
+
 
     def selectFile(self):
         global resX, resY, originalImage, filePath
@@ -391,10 +429,12 @@ class Main(ctk.CTk):
                 resY = 470
             
         originalImage = ctk.CTkImage(img, size=(resX ,resY))
-        self.originalImageLabel = ctk.CTkLabel(self, image=originalImage, height=10, width=10)
-        self.originalImageLabel.grid(row=0, rowspan = 1,
+        self.originalImageButton = ctk.CTkLabel(self, image=originalImage, height=10, width=10)
+        
+        self.originalImageButton.grid(row=0, rowspan = 1,
                                      column=1, columnspan = 2,
                                      sticky='n')
+        
         
     def renderImage(self):
         dt.RetinaNet(filePath)
@@ -409,6 +449,68 @@ class Main(ctk.CTk):
                                 padx = 0, 
                                 pady = resY + 20,
                                 sticky='n')
+        
+        imgColoring.manipulate(self.blindnessVar.get())
+
+        self.refreshObjMenu()
+
+            
+        
+    def refreshObjMenu(self):
+        jsonPath = r'output\obj.json'
+        with open(jsonPath, 'r') as j:
+            data = json.load(j)
+    
+        self.objPaths = {}
+        self.objLsit = ['None']
+        for key, value in data.items():
+            self.objVar = ctk.StringVar(self)
+
+            objId = key
+            objData = value
+            objName = objData[0]
+            objPercentage = objData[1]
+            objPath = objData[2]
+            obj = f'{objId} | {objName}'
+            self.objPaths[obj] = objPath
+            self.objLsit.append(obj)
+            
+        # obj Label
+        self.objLabel = ctk.CTkLabel(self,text="Object Selection",)
+        self.objLabel.grid(row=0, column=0, columnspan=3, 
+                                padx=50,
+                                pady=480,
+                                sticky="nw")
+        
+        # Obj drop box
+        self.objOptionMenu = ctk.CTkOptionMenu(self, values=self.objLsit, variable=self.objVar, command=self.chooseObj)
+        self.objOptionMenu.grid(row=0, column=0, columnspan=3, 
+                                padx=50,
+                                pady=520,
+                                sticky="nw")
+        
+        print(obj)
+        print(self.objPaths)
+
+        
+        
+    def chooseObj(self, value):
+        objPath = self.objPaths[value]
+        
+        if objPath is not None:
+            # Display the image
+            objImg = cv2.imread(objPath)
+            cv2.namedWindow(f'{appName} - Objects view', cv2.WINDOW_AUTOSIZE)
+            cv2.imshow(f'{appName} - Objects view', objImg)
+            cv2.waitKey(0)  # Wait for a key press to close the image window
+            cv2.destroyAllWindows()
+
+
+
+
+
+
+
 
 def download_file(url, destination):
     response = get(url)
@@ -420,16 +522,20 @@ def RetinaNet():
     thread2.start()
     thread2.join()
 
-
-def about_usOpen():
-    about_us.mainloop()
-
-def setting_open():
+def settingsOpen():
     home.destroy()
+    try:
+        main.destroy()
+    except:
+        pass
     settings.mainloop()
 
 def mainOpen():
     home.destroy()
+    try:
+        settings.destroy()
+    except:
+        pass
     main.mainloop()
 
 def homeOpen():
@@ -446,7 +552,6 @@ if __name__ == "__main__":
     home = Home()
     loading = Loading()
     settings = Settings()
-    about_us= AboutUs()
 
     loading.mainloop()
 
