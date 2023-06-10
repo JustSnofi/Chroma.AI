@@ -9,6 +9,7 @@ execution_path = os.getcwd()
 detector = ObjectDetection()
 extractedPath = r'output\output-extracted'
 # extractedPath = r'img\testing\output-extracted' - for testing
+manipulatedPath = r'output\manipulated'
 outputPath = r'output'
 newFilePath = r'output\output.jpg'
 
@@ -108,7 +109,7 @@ class Local():
 
         print(os.listdir)
         for filename in os.listdir(extractedPath):
-            filePath = os.path.join(extractedPath, filename)
+            filePath = os.path.join(manipulatedPath, filename)
             files.append(filePath)
         
 

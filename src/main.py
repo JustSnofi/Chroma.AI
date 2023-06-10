@@ -18,6 +18,7 @@ import threading
 import json
 import userdata
 import imgColoring
+import cv2
 
 
 # Supported modes : Light, Dark, System
@@ -164,7 +165,7 @@ class Home(ctk.CTk):
 
         # About us Button
         self.weButton = ctk.CTkButton(self, 
-                                        text="About us", font=font, width=50, height=20,command=about_usOpen)
+                                        text="About us", font=font, width=50, height=20)
         self.weButton.grid(row=0, column=0, 
                                         padx=5, 
                                         pady=15,
@@ -285,9 +286,6 @@ class Main(ctk.CTk):
         # self.appearanceVar = tk.StringVar(self)
         # self.themeVar = tk.StringVar(self)
         self.modelVar = tk.StringVar(self)
-        self.objValues = ['None']
-        self.objVar = tk.StringVar()
-        self.objVar.set(self.objValues[0])
         self.minsize(840, 300)
         font = ctk.CTkFont(family='arial', size=18)
         fontTitle = ctk.CTkFont(family='arial', size=22, slant='roman')
@@ -364,20 +362,6 @@ class Main(ctk.CTk):
                                         pady=340, ipady = 15,
                                         sticky="nw") 
         
-        # obj Label
-        self.objLabel = ctk.CTkLabel(self,text="Object Selection", 
-                                    font=font,)
-        self.objLabel.grid(row=0, column=0, columnspan=3, 
-                                padx=50,
-                                pady=480,
-                                sticky="nw")
- 
-        # Obj drop box
-        self.objOptionMenu = ctk.CTkOptionMenu(self, variable=self.objVar, font=font, values=self.objValues)
-        self.objOptionMenu.grid(row=0, column=0, columnspan=3, 
-                                        padx=50,
-                                        pady=520,
-                                        sticky="nw")
         
         # Model Select and install https://imageai.readthedocs.io/en/latest/detection/ https://github.com/OlafenwaMoses/ImageAI/releases
         
@@ -429,6 +413,7 @@ class Main(ctk.CTk):
     # def selectTheme(self, themeVar):
     #     ctk.set_default_color_theme(themeVar)
 
+
     def selectFile(self):
         global resX, resY, originalImage, filePath
         filePath = filedialog.askopenfilename(filetypes=[("PNG files", "*.png"), ('JPEG files', "*.jpg"), ('JPEG files', "*.jpeg")])
@@ -452,7 +437,6 @@ class Main(ctk.CTk):
         
         
     def renderImage(self):
-        jsonPath = r'output\obj.json'
         dt.RetinaNet(filePath)
         
         newImg = Image.open(newFilePath)    
@@ -468,22 +452,65 @@ class Main(ctk.CTk):
         
         imgColoring.manipulate(self.blindnessVar.get())
 
-        # with open(jsonPath, 'r') as f:
-        #     data = json.load(f)
+        self.refreshObjMenu()
+
+            
         
-        # for key, value in data.items():
-        #     items = f'{key} | {value}'
+    def refreshObjMenu(self):
+        jsonPath = r'output\obj.json'
+        with open(jsonPath, 'r') as j:
+            data = json.load(j)
+    
+        self.objPaths = {}
+        self.objLsit = ['None']
+        for key, value in data.items():
+            self.objVar = ctk.StringVar(self)
+
+            objId = key
+            objData = value
+            objName = objData[0]
+            objPercentage = objData[1]
+            objPath = objData[2]
+            obj = f'{objId} | {objName}'
+            self.objPaths[obj] = objPath
+            self.objLsit.append(obj)
+            
+        # obj Label
+        self.objLabel = ctk.CTkLabel(self,text="Object Selection",)
+        self.objLabel.grid(row=0, column=0, columnspan=3, 
+                                padx=50,
+                                pady=480,
+                                sticky="nw")
         
-        # self.objValues.append(list(items))
-        # menu = self.objOptionMenu["menu"]
-        # menu.delete(0, "end")
+        # Obj drop box
+        self.objOptionMenu = ctk.CTkOptionMenu(self, values=self.objLsit, variable=self.objVar, command=self.chooseObj)
+        self.objOptionMenu.grid(row=0, column=0, columnspan=3, 
+                                padx=50,
+                                pady=520,
+                                sticky="nw")
         
-        # for string in self.objValues:
-        #     menu.add_command(label=string, 
-        #                      command=lambda value=string: self.objVar.set(value))  
+        print(obj)
+        print(self.objPaths)
+
         
         
+    def chooseObj(self, value):
+        objPath = self.objPaths[value]
         
+        if objPath is not None:
+            # Display the image
+            objImg = cv2.imread(objPath)
+            cv2.namedWindow(f'{appName} - Objects view', cv2.WINDOW_AUTOSIZE)
+            cv2.imshow(f'{appName} - Objects view', objImg)
+            cv2.waitKey(0)  # Wait for a key press to close the image window
+            cv2.destroyAllWindows()
+
+
+
+
+
+
+
 
 def download_file(url, destination):
     response = get(url)
@@ -494,10 +521,6 @@ def RetinaNet():
     thread2 = dt.RetinaNet(filePath)
     thread2.start()
     thread2.join()
-
-
-def about_usOpen():
-    about_us.mainloop()
 
 def settingsOpen():
     home.destroy()
@@ -529,7 +552,6 @@ if __name__ == "__main__":
     home = Home()
     loading = Loading()
     settings = Settings()
-    about_us= AboutUs()
 
     loading.mainloop()
 
