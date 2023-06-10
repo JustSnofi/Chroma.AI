@@ -14,8 +14,6 @@ main.py will do an automatic check everytime it opens and see if the models exis
 
 from imageai.Detection import ObjectDetection
 import os
-import cv2
-import PIL
 import json
 import shutil
 

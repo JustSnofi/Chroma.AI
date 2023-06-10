@@ -48,5 +48,7 @@ def manipulate(type):
         mainManipulatedImg = colorblind.simulate_colorblindness(img, colorblind_type=type)
         cv2.imwrite(mainOutputPath, mainManipulatedImg)
 
+
+
 if __name__ == '__main__':
     manipulate(type='tritanopia')

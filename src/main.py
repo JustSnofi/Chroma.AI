@@ -50,6 +50,9 @@ weURL = r'https://github.com/JustSnofi/Chroma.AI#readme'
 
 appWidth, appHeight = 780, 780
 
+
+
+
 class Loading(ctk.CTk):
     def __init__(self, *args, **kwargs):
         global modelsCount
@@ -79,16 +82,7 @@ class Loading(ctk.CTk):
 
         self.modelCountingLabel = ctk.CTkLabel(self, text=self.countingVar.get(), font=font)
         self.modelCountingLabel.grid(row = 2, column = 0 , sticky = 's')
-        
-        # for path in os.listdir('models/'):
-        #     if os.path.isfile(os.path.join('models/', path)):
-        #         modelsCount += 1
-        # while modelsCount != 4:
-        #     thread1 = threading.Thread(target=downloadModels)
-        #     thread1.start()
-        # else:
-        #     self.destroy
-        #     Main.mainloop(self)
+
 
         def downloadModels():
             '''Downloads and Checks if models exist.'''
@@ -113,23 +107,13 @@ class Loading(ctk.CTk):
 
         thread1 = threading.Thread(target=downloadModels)
         thread1.start()
-
-            
-            
-        
+          
 
 
     
-
 class Home(ctk.CTk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        # !!!Tried to set background as an image - didnt work!!!
-        # homeBG = ctk.CTkImage(Image.open('img\icon_bg.png'))
-        # self.backgroundLabel = ctk.CTkLabel(self, image=homeBG)
-        # self.backgroundLabel.place(x=0, y=0, relwidth=1, relheight=1)
-        
         self.title(appName + " - color blind helper")
         self.iconbitmap(appLogoPath)
         self.resizable(False,False)
@@ -159,7 +143,7 @@ class Home(ctk.CTk):
         
         # Settings Button
         self.settingsButton = ctk.CTkButton(self,
-                                        text="Settings", font=font,command=settingsOpen)
+                                        text="Settings", font=font,command=homeToSettingsOpen)
         self.settingsButton.grid(row=0, column=0, columnspan=3, 
                                         padx=250, 
                                         pady=300, ipadx = 40, ipady = 30,
@@ -178,26 +162,29 @@ class Home(ctk.CTk):
     def openURL(self):
         webbrowser.open(weURL,new=1)
 
+
+
+
+
 #Settings page
 class Settings(ctk.CTk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.title(appName + "- Settings")
+        self.title(f"{appName} - Settings")
         self.iconbitmap(appLogoPath)
         self.resizable(False,False)
         self.geometry(f"{appWidth}x{appHeight}")
         self.columnconfigure(1, weight=1)
         self.rowconfigure(1, weight=1)
-        # self.minsize(700, 680)
         font = ctk.CTkFont(family='arial', size=20)
         fontTitle = ctk.CTkFont(family='arial', size=65, slant='roman')
         self.appearanceVar = tk.StringVar(self)
         self.themeVar = tk.StringVar(self)
-        padx = 260
+        padx = 280
 
         # ChromaAi Title
         self.settingsLabel = ctk.CTkLabel(self,
-                                    text="Settings", font=fontTitle)
+                                    text=f"  {appName} \n Settings", font=fontTitle)
         
         self.settingsLabel.grid(row=0, column=0, 
                                         padx=220,
@@ -242,18 +229,24 @@ class Settings(ctk.CTk):
                                 pady=460,
                                 sticky="nw")
         
+        self.goToHomeButton = ctk.CTkButton(self, text='Home', font=font,
+                                            command=settingsToHomeOpen)
+        
+        self.goToHomeButton.grid(row=0, column=0, columnspan=3, 
+                                padx=padx,
+                                pady=520,
+                                sticky="nw")
+        
         # Will be added in the next versions
         # self.fullscreenSwitch = ctk.CTkSwitch(self, variable=self.fullscreenVar, command=)
         
         
     def selectAppearance(self, appearanceVar):
         ctk.set_appearance_mode(appearanceVar)
+        
     def selectTheme(self, themeVar):
         ctk.set_default_color_theme(themeVar)
-    def goToHomne(self):
-        self.after(1, self.destroy())
-        main.mainloop()
-        
+
 
 # Main Window Class
 class Main(ctk.CTk):
@@ -264,8 +257,6 @@ class Main(ctk.CTk):
         self.geometry(f"{appWidth}x{appHeight}")
         self.columnconfigure(1, weight=1)
         self.rowconfigure(1, weight=1)
-        # self.appearanceVar = tk.StringVar(self)
-        # self.themeVar = tk.StringVar(self)
         self.modelVar = tk.StringVar(self)
         self.minsize(840, 300)
         font = ctk.CTkFont(family='arial', size=18)
@@ -362,15 +353,16 @@ class Main(ctk.CTk):
                                         pady=640,
                                         sticky="nw")
         
-        self.goToSettingsButton = ctk.CTkButton(self, text='Settings', 
+        self.goToSettingsButton = ctk.CTkButton(self, text='Home', 
                                                 font=font, 
-                                                command=settingsOpen)
+                                                command=mainToHomeOpen)
         
         self.goToSettingsButton.grid(row=0, column=0, columnspan=3, 
                                     padx=50,
                                     pady=700,
                                     sticky="nw")
         
+
     def blindnessSelect(self):
         value = self.blindnessVar.get()    
         if value == 'deuteranopia':
@@ -382,6 +374,7 @@ class Main(ctk.CTk):
         elif value == 'None':
             userdata.saveBlindness('None')
 
+
     def modelSelect(self, modelVar):
         if modelVar == 'RetinaNet':
             return 'models\retinanet_resnet50_fpn_coco-eeacb38b.pth'
@@ -389,12 +382,6 @@ class Main(ctk.CTk):
             return 'models\yolov3.pt'
         if modelVar == 'TinyYOLOv3':
             return 'models\tiny-yolov3.pt'
-    
-    # def selectAppearance(self, appearanceVar):
-    #     ctk.set_appearance_mode(appearanceVar)
-
-    # def selectTheme(self, themeVar):
-    #     ctk.set_default_color_theme(themeVar)
 
 
     def selectFile(self):
@@ -495,7 +482,6 @@ class Main(ctk.CTk):
 
 
 
-
 # Not used - maybe used in the future
 def RetinaNet():
     thread2 = dt.RetinaNet(filePath)
@@ -512,16 +498,27 @@ def download_file(url, destination):
 
 
 
-def settingsOpen():
-    settings.mainloop()
+
+def homeToSettingsOpen():
+    home.withdraw()
+    settings.deiconify()
 
 def homeToMainOpen():
-    home.destroy()
-    main.mainloop()
+    home.withdraw()
+    main.deiconify()
 
 def loadingToHomeOpen():
-    loading.destroy()
-    home.mainloop()
+    loading.withdraw()
+    home.deiconify()
+
+def settingsToHomeOpen():
+    settings.withdraw()
+    home.deiconify()
+
+def mainToHomeOpen():
+    main.withdraw()
+    home.deiconify()
+
 
 
 
@@ -532,12 +529,15 @@ if __name__ == "__main__":
     !!!README!!! : main = Main() needs to be always at the top or it will cause a bug
     
     '''
+
     main = Main()
     home = Home()
     loading = Loading()
     settings = Settings()
 
     loading.mainloop()
-
-
-
+    
+    settings.mainloop()
+    settings.withdraw()
+    main.mainloop()
+    main.withdraw()

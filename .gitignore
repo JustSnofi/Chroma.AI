@@ -2,6 +2,9 @@
 models/*.pt
 models/*.pth
 
+# git ignore testing
+src/testing/
+
 # git ignoring tests
 img/testing/output.jpg
 img/testing/output-extracted
