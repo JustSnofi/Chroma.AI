@@ -8,24 +8,26 @@ v0.2.3
 import customtkinter as ctk
 import tkinter as tk
 from tkinter import filedialog
-from PIL import ImageTk, Image
-import numpy as np
+from PIL import Image
+
 import os
-import detection as dt
 from requests import get
 import threading
+import webbrowser
 import json
+
+import cv2
+import pandas as pd
+
 import userdata
 import imgColoring
-import cv2
-import webbrowser
+import detection as dt
 
 
-# Supported modes : Light, Dark, System
-ctk.set_appearance_mode('dark')
-# Supported themes : green, dark-blue, blue
-ctk.set_default_color_theme("green")  
 
+
+
+# --Model installation vars --
 links = [
     'https://github.com/OlafenwaMoses/ImageAI/releases/download/3.0.0-pretrained/retinanet_resnet50_fpn_coco-eeacb38b.pth/',
     'https://github.com/OlafenwaMoses/ImageAI/releases/download/3.0.0-pretrained/yolov3.pt/',
@@ -38,6 +40,12 @@ destinations = [
     'models/TinyYoloV3.pt'
 ]
 
+# --Data set vars--
+dataSetIndex=["Name", "Hex", "Red", "Green", "Blue"]
+dataSetPath = r'H:\Adam\School\Coding\Chroma.AI\data\color_names.csv'
+dataSet = pd.read_csv(dataSetPath, names=dataSetIndex, header=None)
+
+# --App vars--
 appName = 'Chroma.AI'
 
 appLogoPath = r'img\app\icon.ico'
@@ -46,9 +54,16 @@ newFilePath = r'output\output.jpg'
 
 modelsCount = 0
 
+jsonPath = r'output\obj.json'
+
 weURL = r'https://github.com/JustSnofi/Chroma.AI#readme'
 
 appWidth, appHeight = 780, 780
+
+# Supported modes : Light, Dark, System
+ctk.set_appearance_mode('dark')
+# Supported themes : green, dark-blue, blue
+ctk.set_default_color_theme("green")
 
 class Loading(ctk.CTk):
     def __init__(self, *args, **kwargs):
@@ -250,9 +265,6 @@ class Settings(ctk.CTk):
         ctk.set_appearance_mode(appearanceVar)
     def selectTheme(self, themeVar):
         ctk.set_default_color_theme(themeVar)
-    def goToHomne(self):
-        self.after(1, self.destroy())
-        main.mainloop()
         
 
 # Main Window Class
@@ -440,7 +452,6 @@ class Main(ctk.CTk):
             
         
     def refreshObjMenu(self):
-        jsonPath = r'output\obj.json'
         with open(jsonPath, 'r') as j:
             data = json.load(j)
     
@@ -478,19 +489,60 @@ class Main(ctk.CTk):
         print(obj)
         print(self.objPaths)
 
-        
+    
         
     def chooseObj(self, value):
-        objPath = self.objPaths[value]
-        
-        if objPath is not None:
-            # Display the image
-            objImg = cv2.imread(objPath)
-            cv2.namedWindow(f'{appName} - Objects view', cv2.WINDOW_AUTOSIZE)
-            cv2.imshow(f'{appName} - Objects view', objImg)
-            cv2.waitKey(0)  # Wait for a key press to close the image window
-            cv2.destroyAllWindows()
+        objPath = self.objPaths[self.objVar.get()]
+        _windowName = f"{appName} - Image Preview"
 
+        if objPath is not None:
+            # Color Recognition
+            def _recognizeColor(R,G,B):
+                print('color recognized')
+                _minimum = 10000
+                for _colorSet in range(len(dataSet)):
+                    _d = abs(R - int(dataSet.loc[_colorSet,"Red"])) 
+                    + abs(G - int(dataSet.loc[_colorSet,"Green"])) 
+                    + abs(B - int(dataSet.loc[_colorSet,"Blue"]))
+
+                    if(_d<=_minimum):
+                        _minimum = _d
+                        _cname = dataSet.loc[_colorSet,"Name"]
+                return _cname
+
+
+            def _clickEvent(event, x, y, flags, param):
+                if event == cv2.EVENT_LBUTTONDOWN:
+                    _imgColor = _img[y, x]  # Get the color of the clicked pixel
+                    _imgColor = _imgColor.tolist()  # Convert color to a Python list
+                    _imgColor = [int(c) for c in _imgColor]  # Convert color values to integers
+
+                    _r, _g, _b = _imgColor[0], _imgColor[1], _imgColor[2]
+
+                    # Display a rectangle at the top of the window with the clicked color
+                    cv2.rectangle(_img, (0, 0), (_imgWidth, 28), _imgColor, -1)
+
+                    if _r + _g + _b >= 300:
+                        _textColor = (0, 0, 0)
+                    else:
+                        _textColor = (255, 255, 255)
+
+                    cv2.putText(_img, f"{_recognizeColor(_r, _g, _b)} | {_r} , {_g} , {_b}", (10, 20), 
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, _textColor, 1)
+
+                    cv2.imshow(_windowName, _img)
+
+            # Load the image
+            _img = cv2.imread(objPath)
+            _imgHeight, _imgWidth, _imgChannels = _img.shape
+            # Create a window and bind the mouse callback function
+            cv2.namedWindow(_windowName)
+            cv2.setMouseCallback(_windowName, _clickEvent)
+            # Show the original image
+            cv2.imshow(_windowName, _img)
+            # Wait for a key press to exit
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
 
 
 
@@ -538,6 +590,4 @@ if __name__ == "__main__":
     settings = Settings()
 
     loading.mainloop()
-
-
 
