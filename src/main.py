@@ -1,7 +1,7 @@
 '''
 
 Chroma.Ai 
-v0.2.3
+v1.2.0
 
 '''
 
@@ -42,7 +42,7 @@ destinations = [
 
 # --Data set vars--
 dataSetIndex=["Name", "Hex", "Red", "Green", "Blue"]
-dataSetPath = r'H:\Adam\School\Coding\Chroma.AI\data\color_names.csv'
+dataSetPath = r'data\color_names.csv'
 dataSet = pd.read_csv(dataSetPath, names=dataSetIndex, header=None)
 
 # --App vars--
@@ -174,7 +174,7 @@ class Home(ctk.CTk):
         
         # Settings Button
         self.settingsButton = ctk.CTkButton(self,
-                                        text="Settings", font=font,command=settingsOpen)
+                                        text="Settings", font=font,command=homeToSettingsOpen)
         self.settingsButton.grid(row=0, column=0, columnspan=3, 
                                         padx=250, 
                                         pady=300, ipadx = 40, ipady = 30,
@@ -256,6 +256,16 @@ class Settings(ctk.CTk):
                                 padx=padx,
                                 pady=460,
                                 sticky="nw")
+        
+        self.goToHomeButton = ctk.CTkButton(self, text='Home', font=font,
+                                            command=settingsToHomeOpen)
+        
+        self.goToHomeButton.grid(row=0, column=0, columnspan=3, 
+                                padx=padx,
+                                pady=520,
+                                sticky="nw")
+        
+
         
         # Will be added in the next versions
         # self.fullscreenSwitch = ctk.CTkSwitch(self, variable=self.fullscreenVar, command=)
@@ -374,9 +384,9 @@ class Main(ctk.CTk):
                                         pady=640,
                                         sticky="nw")
         
-        self.goToSettingsButton = ctk.CTkButton(self, text='Settings', 
+        self.goToSettingsButton = ctk.CTkButton(self, text='Home', 
                                                 font=font, 
-                                                command=settingsOpen)
+                                                command=mainToHomeOpen)
         
         self.goToSettingsButton.grid(row=0, column=0, columnspan=3, 
                                     padx=50,
@@ -564,16 +574,26 @@ def download_file(url, destination):
 
 
 
-def settingsOpen():
-    settings.mainloop()
+def homeToSettingsOpen():
+    home.withdraw()
+    settings.deiconify()
 
 def homeToMainOpen():
-    home.destroy()
-    main.mainloop()
+    home.withdraw()
+    main.deiconify()
 
 def loadingToHomeOpen():
-    loading.destroy()
-    home.mainloop()
+    loading.withdraw()
+    home.deiconify()
+
+def settingsToHomeOpen():
+    settings.withdraw()
+    home.deiconify()
+
+def mainToHomeOpen():
+    main.withdraw()
+    home.deiconify()
+
 
 
 
@@ -589,5 +609,16 @@ if __name__ == "__main__":
     loading = Loading()
     settings = Settings()
 
+    
     loading.mainloop()
+    
+    home.mainloop()
+    home.withdraw()
+    
+    main.mainloop()
+    main.withdraw()
+    
+    settings.mainloop()
+    settings.withdraw()
+    
 
