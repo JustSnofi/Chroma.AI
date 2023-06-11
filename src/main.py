@@ -273,9 +273,10 @@ class Settings(ctk.CTk):
         
     def selectAppearance(self, appearanceVar):
         ctk.set_appearance_mode(appearanceVar)
+        settingsOpen()
     def selectTheme(self, themeVar):
         ctk.set_default_color_theme(themeVar)
-        
+        settingsOpen()       
 
 # Main Window Class
 class Main(ctk.CTk):
@@ -593,6 +594,9 @@ def settingsToHomeOpen():
 def mainToHomeOpen():
     main.withdraw()
     home.deiconify()
+
+def settingsOpen():
+    settings.deiconify()
 
 
 
